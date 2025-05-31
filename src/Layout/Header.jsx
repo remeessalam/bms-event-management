@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useLanguage } from "../context/LanguageContext";
 import { useTranslation } from "../translations";
+import { Link } from "react-router-dom";
 
 const Header = () => {
   const { language, changeLanguage } = useLanguage();
@@ -57,10 +58,13 @@ const Header = () => {
                 </div>
               )}
             </div>
-            <button className="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 transition !rounded-button whitespace-nowrap cursor-pointer">
+            <Link
+              to={"/signup"}
+              className="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 transition !rounded-button whitespace-nowrap cursor-pointer"
+            >
               <i className="fas fa-sign-in-alt mr-2"></i>
               {translate("signIn")}
-            </button>
+            </Link>
           </div>
         </div>
       </div>
