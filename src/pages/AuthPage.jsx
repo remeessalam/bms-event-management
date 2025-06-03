@@ -1,7 +1,14 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { loginUser, registerUser } from "../Api/authApi";
+import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
+import toast from "react-hot-toast";
 
 const AuthPage = ({ type }) => {
+  const navigate = useNavigate();
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -17,14 +24,36 @@ const AuthPage = ({ type }) => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (type === "signup" && formData.password !== formData.confirmPassword) {
-      alert("Passwords don't match!");
-      return;
+    try {
+      if (type === "signup") {
+        if (formData.password !== formData.confirmPassword) {
+          toast.error("Passwords don't match!");
+          return;
+        }
+
+        const { name, email, password } = formData;
+        const res = await registerUser({ name, email, password });
+        console.log("Signup Response:", res);
+        toast.success("Signup successful!");
+        navigate("/login");
+      } else {
+        const { email, password } = formData;
+        const res = await loginUser({ email, password });
+        console.log("Login Response:", res);
+
+        if (res.success) {
+          const { token, user, dashboardUrl } = res.data;
+          localStorage.setItem("jwtToken", token);
+          toast.success("Login successful!");
+          navigate(dashboardUrl || "/");
+        }
+      }
+    } catch (error) {
+      toast.error(error.message || "Something went wrong!");
+      console.error("Auth Error:", error);
     }
-    // Handle authentication logic here
-    console.log(`${type} submitted`, formData);
   };
 
   return (
@@ -79,7 +108,7 @@ const AuthPage = ({ type }) => {
                     required
                     value={formData.name}
                     onChange={handleChange}
-                    className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                    className="appearance-none text-black block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                   />
                 </div>
               </div>
@@ -101,7 +130,7 @@ const AuthPage = ({ type }) => {
                   required
                   value={formData.email}
                   onChange={handleChange}
-                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                  className="appearance-none text-black block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                 />
               </div>
             </div>
@@ -113,22 +142,33 @@ const AuthPage = ({ type }) => {
               >
                 Password
               </label>
-              <div className="mt-1">
+              <div className="mt-1 relative">
                 <input
                   id="password"
                   name="password"
-                  type="password"
+                  type={showPassword ? "text" : "password"}
                   autoComplete={
                     type === "signup" ? "new-password" : "current-password"
                   }
                   required
                   value={formData.password}
                   onChange={handleChange}
-                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 text-black focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                 />
+                <span
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-2.5 cursor-pointer text-gray-600"
+                >
+                  {showPassword ? (
+                    <AiOutlineEyeInvisible size={20} />
+                  ) : (
+                    <AiOutlineEye size={20} />
+                  )}
+                </span>
               </div>
             </div>
 
+            {/* Confirm Password for Signup */}
             {type === "signup" && (
               <div>
                 <label
@@ -137,24 +177,34 @@ const AuthPage = ({ type }) => {
                 >
                   Confirm Password
                 </label>
-                <div className="mt-1">
+                <div className="mt-1 relative">
                   <input
                     id="confirmPassword"
                     name="confirmPassword"
-                    type="password"
+                    type={showConfirmPassword ? "text" : "password"}
                     autoComplete="new-password"
                     required
                     value={formData.confirmPassword}
                     onChange={handleChange}
-                    className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                    className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 text-black focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                   />
+                  <span
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    className="absolute right-3 top-2.5 cursor-pointer text-gray-600"
+                  >
+                    {showConfirmPassword ? (
+                      <AiOutlineEyeInvisible size={20} />
+                    ) : (
+                      <AiOutlineEye size={20} />
+                    )}
+                  </span>
                 </div>
               </div>
             )}
 
             {type === "login" && (
               <div className="flex items-center justify-between">
-                <div className="flex items-center">
+                {/* <div className="flex items-center">
                   <input
                     id="remember-me"
                     name="remember-me"
@@ -167,8 +217,7 @@ const AuthPage = ({ type }) => {
                   >
                     Remember me
                   </label>
-                </div>
-
+                </div> */}
                 <div className="text-sm">
                   <Link
                     to="/forgot-password"
@@ -189,51 +238,6 @@ const AuthPage = ({ type }) => {
               </button>
             </div>
           </form>
-
-          {/* <div className="mt-6">
-            <div className="relative">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-gray-300" />
-              </div>
-              <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-white text-gray-500">
-                  Or continue with
-                </span>
-              </div>
-            </div>
-
-            <div className="mt-6 grid grid-cols-3 gap-3">
-              <div>
-                <button
-                  type="button"
-                  className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
-                >
-                  <span className="sr-only">Sign in with Facebook</span>
-                  <i className="fab fa-facebook-f"></i>
-                </button>
-              </div>
-
-              <div>
-                <button
-                  type="button"
-                  className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
-                >
-                  <span className="sr-only">Sign in with Twitter</span>
-                  <i className="fab fa-twitter"></i>
-                </button>
-              </div>
-
-              <div>
-                <button
-                  type="button"
-                  className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
-                >
-                  <span className="sr-only">Sign in with Google</span>
-                  <i className="fab fa-google"></i>
-                </button>
-              </div>
-            </div>
-          </div> */}
         </div>
       </div>
     </div>

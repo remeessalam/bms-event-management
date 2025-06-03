@@ -1,12 +1,16 @@
 // The exported code uses Tailwind CSS. Install Tailwind CSS in your dev environment to ensure all styles work.
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { fetchServices } from "../Api/serviceApi";
+
 const DecorationPage = () => {
-  const [activeFilter, setActiveFilter] = useState("All");
+  // const [activeFilter, setActiveFilter] = useState("All");
   const [priceRange, setPriceRange] = useState("All");
   const [eventType, setEventType] = useState("All");
   const [showEventTypeDropdown, setShowEventTypeDropdown] = useState(false);
   const [showPriceDropdown, setShowPriceDropdown] = useState(false);
   const [showQuoteForm, setShowQuoteForm] = useState(false);
+  const [services, setServices] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const toggleEventTypeDropdown = () => {
     setShowEventTypeDropdown(!showEventTypeDropdown);
@@ -24,6 +28,22 @@ const DecorationPage = () => {
     setPriceRange(range);
     setShowPriceDropdown(false);
   };
+
+  useEffect(() => {
+    const fetchServiceData = async () => {
+      try {
+        const servicesData = await fetchServices("DECORATION");
+        setServices(servicesData || []);
+      } catch (error) {
+        console.error("Error fetching services:", error);
+        setServices([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchServiceData();
+  }, []);
   return (
     <div className="min-h-screen bg-gray-50">
       <main>
@@ -225,7 +245,11 @@ const DecorationPage = () => {
         {/* Filters Section */}
         <div className="bg-white shadow-sm">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-            <div className="flex flex-wrap items-center justify-between gap-4">
+            <div
+              className="flex flex-wrap items-center justify-between gap-4
+
+"
+            >
               <h2 className="text-xl font-bold text-gray-900">
                 Available Services
               </h2>
@@ -327,7 +351,7 @@ const DecorationPage = () => {
                   )}
                 </div>
                 {/* Rating Filter */}
-                <div className="flex space-x-1">
+                {/* <div className="flex space-x-1">
                   {["All", "4+", "3+", "2+"].map((rating) => (
                     <button
                       key={rating}
@@ -341,302 +365,84 @@ const DecorationPage = () => {
                       {rating === "All" ? "All Ratings" : `${rating} Stars`}
                     </button>
                   ))}
-                </div>
+                </div> */}
               </div>
             </div>
           </div>
         </div>
         {/* Service Listings */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {/* Service 1 */}
-            <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition">
-              <div
-                className="h-56 bg-cover bg-center"
-                style={{
-                  backgroundImage: `url('https://readdy.ai/api/search-image?query=elegant%20wedding%20decoration%20service%20with%20white%20floral%20arrangements%2C%20draped%20fabrics%2C%20sophisticated%20table%20settings%2C%20romantic%20lighting%2C%20and%20premium%20decor%20elements%20on%20a%20simple%20neutral%20background&width=400&height=300&seq=107&orientation=landscape')`,
-                }}
-              ></div>
-              <div className="p-6">
-                <div className="flex justify-between items-start mb-2">
-                  <h3 className="text-xl font-semibold text-gray-900">
-                    Wedding Elegance Package
-                  </h3>
-                  <span className="bg-indigo-100 text-indigo-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
-                    Wedding
-                  </span>
-                </div>
-                <div className="flex items-center mb-2">
-                  <div className="flex text-yellow-400">
-                    <i className="fas fa-star"></i>
-                    <i className="fas fa-star"></i>
-                    <i className="fas fa-star"></i>
-                    <i className="fas fa-star"></i>
-                    <i className="fas fa-star"></i>
-                  </div>
-                  <span className="ml-2 text-sm text-gray-600">
-                    5.0 (42 reviews)
-                  </span>
-                </div>
-                <p className="text-gray-600 mb-4">
-                  Complete wedding decoration service including floral
-                  arrangements, table settings, backdrop, and lighting.
-                </p>
-                <div className="flex justify-between items-center">
-                  <span className="text-lg font-bold text-gray-900">
-                    $1,500 - $3,000
-                  </span>
-                  <a
-                    href="https://readdy.ai/home/bcdd3814-0fce-4c39-9e2f-e221ce2b69ce/d8b1b1d1-329b-42ee-8769-e9980f361b4f"
-                    data-readdy="true"
-                    className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md transition !rounded-button whitespace-nowrap cursor-pointer inline-block no-underline"
-                  >
-                    View Details
-                  </a>
-                </div>
-              </div>
+          {loading ? (
+            <div className="text-center text-gray-600">Loading...</div>
+          ) : services.length === 0 ? (
+            <div className="text-center text-gray-600">
+              Currently, we don't have any services.
             </div>
-            {/* Service 2 */}
-            <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition">
-              <div
-                className="h-56 bg-cover bg-center"
-                style={{
-                  backgroundImage: `url('https://readdy.ai/api/search-image?query=corporate%20event%20decoration%20with%20sleek%20modern%20design%2C%20branded%20elements%2C%20professional%20table%20arrangements%2C%20ambient%20lighting%2C%20and%20business-appropriate%20decor%20on%20a%20simple%20neutral%20background&width=400&height=300&seq=108&orientation=landscape')`,
-                }}
-              ></div>
-              <div className="p-6">
-                <div className="flex justify-between items-start mb-2">
-                  <h3 className="text-xl font-semibold text-gray-900">
-                    Corporate Event Setup
-                  </h3>
-                  <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
-                    Corporate
-                  </span>
-                </div>
-                <div className="flex items-center mb-2">
-                  <div className="flex text-yellow-400">
-                    <i className="fas fa-star"></i>
-                    <i className="fas fa-star"></i>
-                    <i className="fas fa-star"></i>
-                    <i className="fas fa-star"></i>
-                    <i className="fas fa-star-half-alt"></i>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {services.map((service) => (
+                <div
+                  key={service.id}
+                  className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition"
+                >
+                  <div
+                    className="h-56 bg-cover bg-center"
+                    style={{
+                      backgroundImage: `url(${
+                        service.images[0] ||
+                        "https://readdy.ai/api/search-image?query=generic%20event%20decoration&width=400&height=300&seq=113&orientation=landscape"
+                      })`,
+                    }}
+                  ></div>
+                  <div className="p-6">
+                    <div className="flex justify-between items-start mb-2">
+                      <h3 className="text-xl font-semibold text-gray-900">
+                        {service.title}
+                      </h3>
+                      <span className="bg-indigo-100 text-indigo-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
+                        {service.category}
+                      </span>
+                    </div>
+                    <div className="flex items-center mb-2">
+                      <div className="flex text-yellow-400">
+                        {[...Array(5)].map((_, index) => (
+                          <i
+                            key={index}
+                            className={`fas fa-star ${
+                              index < Math.floor(4.5) ? "" : "far"
+                            }`}
+                          ></i>
+                        ))}
+                      </div>
+                      <span className="ml-2 text-sm text-gray-600">
+                        4.5 (Based on sample data)
+                      </span>
+                    </div>
+                    <p className="text-gray-600 mb-4">{service.description}</p>
+                    <div className="flex justify-between items-center">
+                      <span className="text-lg font-bold text-gray-900">
+                        {service.currency} {service.price.toLocaleString()}
+                      </span>
+                      <a
+                        href={`https://readdy.ai/home/bcdd3814-0fce-4c39-9e2f-e221ce2b69ce/${service.id}`}
+                        data-readdy="true"
+                        className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md transition !rounded-button whitespace-nowrap cursor-pointer inline-block no-underline"
+                      >
+                        View Details
+                      </a>
+                    </div>
                   </div>
-                  <span className="ml-2 text-sm text-gray-600">
-                    4.5 (28 reviews)
-                  </span>
                 </div>
-                <p className="text-gray-600 mb-4">
-                  Professional decoration for corporate events, conferences, and
-                  business meetings.
-                </p>
-                <div className="flex justify-between items-center">
-                  <span className="text-lg font-bold text-gray-900">
-                    $800 - $2,500
-                  </span>
-                  <a
-                    href="https://readdy.ai/home/bcdd3814-0fce-4c39-9e2f-e221ce2b69ce/d8b1b1d1-329b-42ee-8769-e9980f361b4f"
-                    data-readdy="true"
-                    className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md transition !rounded-button whitespace-nowrap cursor-pointer inline-block no-underline"
-                  >
-                    View Details
-                  </a>
-                </div>
-              </div>
+              ))}
             </div>
-            {/* Service 3 */}
-            <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition">
-              <div
-                className="h-56 bg-cover bg-center"
-                style={{
-                  backgroundImage: `url('https://readdy.ai/api/search-image?query=birthday%20party%20decoration%20with%20colorful%20balloons%2C%20festive%20elements%2C%20themed%20table%20settings%2C%20party%20props%2C%20and%20celebratory%20atmosphere%20on%20a%20simple%20neutral%20background&width=400&height=300&seq=109&orientation=landscape')`,
-                }}
-              ></div>
-              <div className="p-6">
-                <div className="flex justify-between items-start mb-2">
-                  <h3 className="text-xl font-semibold text-gray-900">
-                    Birthday Celebration Setup
-                  </h3>
-                  <span className="bg-pink-100 text-pink-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
-                    Birthday
-                  </span>
-                </div>
-                <div className="flex items-center mb-2">
-                  <div className="flex text-yellow-400">
-                    <i className="fas fa-star"></i>
-                    <i className="fas fa-star"></i>
-                    <i className="fas fa-star"></i>
-                    <i className="fas fa-star"></i>
-                    <i className="far fa-star"></i>
-                  </div>
-                  <span className="ml-2 text-sm text-gray-600">
-                    4.0 (35 reviews)
-                  </span>
-                </div>
-                <p className="text-gray-600 mb-4">
-                  Themed birthday decorations including balloons, banners, table
-                  settings, and props.
-                </p>
-                <div className="flex justify-between items-center">
-                  <span className="text-lg font-bold text-gray-900">
-                    $300 - $800
-                  </span>
-                  <a
-                    href="https://readdy.ai/home/bcdd3814-0fce-4c39-9e2f-e221ce2b69ce/d8b1b1d1-329b-42ee-8769-e9980f361b4f"
-                    data-readdy="true"
-                    className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md transition !rounded-button whitespace-nowrap cursor-pointer inline-block no-underline"
-                  >
-                    View Details
-                  </a>
-                </div>
-              </div>
+          )}
+          {services.length > 0 && (
+            <div className="mt-12 text-center">
+              <button className="bg-white border border-gray-300 text-gray-700 px-6 py-3 rounded-md font-medium hover:bg-gray-50 transition !rounded-button whitespace-nowrap cursor-pointer">
+                Load More Services
+              </button>
             </div>
-            {/* Service 4 */}
-            <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition">
-              <div
-                className="h-56 bg-cover bg-center"
-                style={{
-                  backgroundImage: `url('https://readdy.ai/api/search-image?query=anniversary%20celebration%20decoration%20with%20romantic%20elements%2C%20red%20roses%2C%20candles%2C%20elegant%20table%20settings%2C%20champagne%20setup%2C%20and%20intimate%20atmosphere%20on%20a%20simple%20neutral%20background&width=400&height=300&seq=110&orientation=landscape')`,
-                }}
-              ></div>
-              <div className="p-6">
-                <div className="flex justify-between items-start mb-2">
-                  <h3 className="text-xl font-semibold text-gray-900">
-                    Anniversary Romance Package
-                  </h3>
-                  <span className="bg-red-100 text-red-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
-                    Anniversary
-                  </span>
-                </div>
-                <div className="flex items-center mb-2">
-                  <div className="flex text-yellow-400">
-                    <i className="fas fa-star"></i>
-                    <i className="fas fa-star"></i>
-                    <i className="fas fa-star"></i>
-                    <i className="fas fa-star"></i>
-                    <i className="fas fa-star-half-alt"></i>
-                  </div>
-                  <span className="ml-2 text-sm text-gray-600">
-                    4.7 (19 reviews)
-                  </span>
-                </div>
-                <p className="text-gray-600 mb-4">
-                  Romantic decoration setup for anniversary celebrations with
-                  roses, candles, and personalized elements.
-                </p>
-                <div className="flex justify-between items-center">
-                  <span className="text-lg font-bold text-gray-900">
-                    $400 - $1,200
-                  </span>
-                  <a
-                    href="https://readdy.ai/home/bcdd3814-0fce-4c39-9e2f-e221ce2b69ce/d8b1b1d1-329b-42ee-8769-e9980f361b4f"
-                    data-readdy="true"
-                    className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md transition !rounded-button whitespace-nowrap cursor-pointer inline-block no-underline"
-                  >
-                    View Details
-                  </a>
-                </div>
-              </div>
-            </div>
-            {/* Service 5 */}
-            <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition">
-              <div
-                className="h-56 bg-cover bg-center"
-                style={{
-                  backgroundImage: `url('https://readdy.ai/api/search-image?query=baby%20shower%20decoration%20with%20pastel%20colors%2C%20cute%20elements%2C%20themed%20props%2C%20balloon%20arrangements%2C%20gift%20table%20setup%2C%20and%20playful%20atmosphere%20on%20a%20simple%20neutral%20background&width=400&height=300&seq=111&orientation=landscape')`,
-                }}
-              ></div>
-              <div className="p-6">
-                <div className="flex justify-between items-start mb-2">
-                  <h3 className="text-xl font-semibold text-gray-900">
-                    Baby Shower Delight
-                  </h3>
-                  <span className="bg-purple-100 text-purple-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
-                    Baby Shower
-                  </span>
-                </div>
-                <div className="flex items-center mb-2">
-                  <div className="flex text-yellow-400">
-                    <i className="fas fa-star"></i>
-                    <i className="fas fa-star"></i>
-                    <i className="fas fa-star"></i>
-                    <i className="fas fa-star"></i>
-                    <i className="fas fa-star"></i>
-                  </div>
-                  <span className="ml-2 text-sm text-gray-600">
-                    5.0 (24 reviews)
-                  </span>
-                </div>
-                <p className="text-gray-600 mb-4">
-                  Themed baby shower decorations with customizable color schemes
-                  and adorable props.
-                </p>
-                <div className="flex justify-between items-center">
-                  <span className="text-lg font-bold text-gray-900">
-                    $350 - $900
-                  </span>
-                  <a
-                    href="https://readdy.ai/home/bcdd3814-0fce-4c39-9e2f-e221ce2b69ce/d8b1b1d1-329b-42ee-8769-e9980f361b4f"
-                    data-readdy="true"
-                    className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md transition !rounded-button whitespace-nowrap cursor-pointer inline-block no-underline"
-                  >
-                    View Details
-                  </a>
-                </div>
-              </div>
-            </div>
-            {/* Service 6 */}
-            <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition">
-              <div
-                className="h-56 bg-cover bg-center"
-                style={{
-                  backgroundImage: `url('https://readdy.ai/api/search-image?query=holiday%20party%20decoration%20with%20festive%20elements%2C%20Christmas%20decor%2C%20winter%20themed%20props%2C%20seasonal%20table%20settings%2C%20and%20celebratory%20atmosphere%20on%20a%20simple%20neutral%20background&width=400&height=300&seq=112&orientation=landscape')`,
-                }}
-              ></div>
-              <div className="p-6">
-                <div className="flex justify-between items-start mb-2">
-                  <h3 className="text-xl font-semibold text-gray-900">
-                    Holiday Season Special
-                  </h3>
-                  <span className="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
-                    Holiday
-                  </span>
-                </div>
-                <div className="flex items-center mb-2">
-                  <div className="flex text-yellow-400">
-                    <i className="fas fa-star"></i>
-                    <i className="fas fa-star"></i>
-                    <i className="fas fa-star"></i>
-                    <i className="fas fa-star"></i>
-                    <i className="far fa-star"></i>
-                  </div>
-                  <span className="ml-2 text-sm text-gray-600">
-                    4.2 (31 reviews)
-                  </span>
-                </div>
-                <p className="text-gray-600 mb-4">
-                  Festive decorations for holiday parties and seasonal
-                  celebrations with themed elements.
-                </p>
-                <div className="flex justify-between items-center">
-                  <span className="text-lg font-bold text-gray-900">
-                    $500 - $1,500
-                  </span>
-                  <a
-                    href="https://readdy.ai/home/bcdd3814-0fce-4c39-9e2f-e221ce2b69ce/d8b1b1d1-329b-42ee-8769-e9980f361b4f"
-                    data-readdy="true"
-                    className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md transition !rounded-button whitespace-nowrap cursor-pointer inline-block no-underline"
-                  >
-                    View Details
-                  </a>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className="mt-12 text-center">
-            <button className="bg-white border border-gray-300 text-gray-700 px-6 py-3 rounded-md font-medium hover:bg-gray-50 transition !rounded-button whitespace-nowrap cursor-pointer">
-              Load More Services
-            </button>
-          </div>
+          )}
         </div>
       </main>
       {/* Quote Request Button */}
@@ -757,4 +563,5 @@ const DecorationPage = () => {
     </div>
   );
 };
+
 export default DecorationPage;

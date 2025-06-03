@@ -1,6 +1,8 @@
 // The exported code uses Tailwind CSS. Install Tailwind CSS in your dev environment to ensure all styles work.
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { fetchServicesDetils } from "../Api/serviceApi";
+import { useParams } from "react-router-dom";
 
 const SoundAndDjServiceDetailsPage = () => {
   const [activeTab, setActiveTab] = useState("overview");
@@ -9,6 +11,7 @@ const SoundAndDjServiceDetailsPage = () => {
   const [specialRequirements, setSpecialRequirements] = useState("");
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [showFullGallery, setShowFullGallery] = useState(false);
+  const [services, setServices] = useState([]);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -213,7 +216,22 @@ const SoundAndDjServiceDetailsPage = () => {
     const pkg = pricingPackages.find((p) => p.id === selectedPackage);
     return pkg ? pkg.price : 0;
   };
+  const { id } = useParams();
+  useEffect(() => {
+    const fetchServiceData = async () => {
+      try {
+        const servicesData = await fetchServicesDetils(id);
+        setServices(servicesData || []);
+      } catch (error) {
+        console.error("Error fetching services:", error);
+        setServices([]);
+      } finally {
+        // setLoading(false);
+      }
+    };
 
+    fetchServiceData();
+  }, []);
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Main Content */}

@@ -2,23 +2,34 @@ import { Link } from "react-router-dom";
 import { useLanguage } from "../context/LanguageContext";
 import { useTranslation } from "../translations";
 import Carousel from "../Components/Carousel";
+import { useEffect } from "react";
+// import { fetchServices } from "../Api/serviceApi";
 
 const HomePage = () => {
   const { language } = useLanguage();
+  // const [services, setServices] = useState([]);
+
   const translate = useTranslation(language);
   let currentSlide = 1;
   const totalSlides = 3;
+  useEffect(() => {
+    // const ser = fetchServices();
 
-  setInterval(() => {
-    currentSlide = (currentSlide % totalSlides) + 1;
-    document.getElementById(`carousel-${currentSlide}`).checked = true;
+    const interval = setInterval(() => {
+      currentSlide = (currentSlide % totalSlides) + 1;
+      const radio = document.getElementById(`carousel-${currentSlide}`);
+      if (radio) radio.checked = true;
 
-    // Trigger the transition by updating the transform property
-    const slider = document.querySelector(".flex.transition-all");
-    slider.style.transform = `translateX(-${(currentSlide - 1) * 33.333}%)`;
-  }, 5000); // Change slide every 5 seconds
+      const slider = document.querySelector(".flex.transition-all");
+      if (slider) {
+        slider.style.transform = `translateX(-${(currentSlide - 1) * 33.333}%)`;
+      }
+    }, 5000);
 
-  // Services data array
+    return () => clearInterval(interval);
+  }, []);
+
+  // // Services data array
   const services = [
     {
       id: 1,
@@ -87,7 +98,7 @@ const HomePage = () => {
       {/* Main Content */}
       <main>
         {/* Stats Section */}
-        <Carousel />
+        {/* <Carousel /> */}
 
         {/* Service Categories */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">

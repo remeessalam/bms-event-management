@@ -1,69 +1,35 @@
-// The exported code uses Tailwind CSS. Install Tailwind CSS in your dev environment to ensure all styles work.
-
-import React, { useState } from "react";
-
+import React, { useEffect, useState } from "react";
+import { getAdminServices, updateServiceStatus } from "../Api/adminApi";
+import {
+  FaListAlt,
+  FaCheckCircle,
+  FaClock,
+  FaTimesCircle,
+} from "react-icons/fa";
+import {
+  FaAngleDoubleLeft,
+  FaChevronLeft,
+  FaChevronRight,
+  FaAngleDoubleRight,
+} from "react-icons/fa";
+import axios from "axios";
 const AdminHomePage = () => {
   // State for services
-  const [services, setServices] = useState([
-    {
-      id: 1,
-      title: "Wedding Photography",
-      category: "Photography",
-      price: 1200,
-      status: "Approved",
-      description:
-        "Professional wedding photography services with multiple packages available.",
-      images: [
-        "https://readdy.ai/api/search-image?query=professional%20wedding%20photography%20scene%20with%20elegant%20couple%20in%20garden%20setting%2C%20soft%20natural%20lighting%2C%20high-end%20camera%20equipment%20visible%2C%20romantic%20atmosphere%2C%20professional%20photography%20session%20in%20progress%2C%20beautiful%20outdoor%20setting&width=600&height=400&seq=1&orientation=landscape",
-      ],
-      features: ["4K Video", "Drone Shots", "Photo Album", "Online Gallery"],
-      terms:
-        "Booking requires 50% advance payment. Cancellation policy applies.",
-      submissionDate: "2025-05-10",
-    },
-    {
-      id: 2,
-      title: "Corporate Event Catering",
-      category: "Catering",
-      price: 2500,
-      status: "Pending",
-      description:
-        "Premium catering service for corporate events with customizable menu options.",
-      images: [
-        "https://readdy.ai/api/search-image?query=elegant%20corporate%20catering%20setup%20with%20professional%20staff%20serving%20gourmet%20appetizers%2C%20corporate%20event%20setting%2C%20professional%20catering%20display%20with%20high-end%20food%20presentation%2C%20business%20atmosphere%2C%20clean%20modern%20aesthetic&width=600&height=400&seq=2&orientation=landscape",
-      ],
-      features: [
-        "Custom Menu",
-        "Staff Included",
-        "Setup & Cleanup",
-        "Premium Dinnerware",
-      ],
-      terms: "Minimum 50 guests. Final headcount required 7 days before event.",
-      submissionDate: "2025-05-15",
-    },
-    {
-      id: 3,
-      title: "Live Band Performance",
-      category: "Entertainment",
-      price: 1800,
-      status: "Rejected",
-      description:
-        "Professional 5-piece band performing popular hits for your special event.",
-      images: [
-        "https://readdy.ai/api/search-image?query=professional%20live%20band%20performing%20on%20stage%20with%20high%20quality%20instruments%2C%20concert%20lighting%2C%20energetic%20performance%2C%20event%20entertainment%20setting%2C%20professional%20musicians%20in%20coordinated%20outfits%2C%20vibrant%20stage%20atmosphere&width=600&height=400&seq=3&orientation=landscape",
-      ],
-      features: [
-        "3-Hour Performance",
-        "Sound Equipment",
-        "Song Requests",
-        "MC Services",
-      ],
-      terms:
-        "Requires stage area of minimum 15x10 feet. Power outlets must be provided.",
-      submissionDate: "2025-05-12",
-      rejectionReason: "Insufficient details about equipment requirements.",
-    },
-  ]);
+
+  const [showStatusPopup, setShowStatusPopup] = useState(null); // service.id or null
+  const [availableStatuses, setAvailableStatuses] = useState([]); // ['Pending', 'Approved', 'Rejected'] minus current
+  const [statusPopupServiceId, setStatusPopupServiceId] = useState(null);
+  const [services, setServices] = useState([]);
+  // State for filtered services
+  const [filteredServices, setFilteredServices] = useState([]);
+  // State for pagination
+  const [currentPage, setCurrentPage] = useState(1);
+  const [servicesPerPage] = useState(5);
+  // State for filters
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [categoryFilter, setCategoryFilter] = useState("all");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [dateFilter, setDateFilter] = useState("");
 
   // State for selected service
   const [selectedService, setSelectedService] = useState(null);
@@ -73,6 +39,26 @@ const AdminHomePage = () => {
   const [modalType, setModalType] = useState("review");
   // State for rejection reason
   const [rejectionReason, setRejectionReason] = useState("");
+
+  useEffect(() => {
+    const token = localStorage.getItem("jwtToken");
+    if (!token) {
+      window.location.href = "/login";
+    }
+  }, []);
+
+  useEffect(() => {
+    const fetchServices = async () => {
+      try {
+        const services = await getAdminServices();
+        setServices(services || []);
+        setFilteredServices(services || []);
+      } catch (error) {
+        console.error("Error fetching services:", error);
+      }
+    };
+    fetchServices();
+  }, []);
 
   // Categories
   const categories = [
@@ -84,6 +70,79 @@ const AdminHomePage = () => {
     "Transportation",
     "Accommodation",
   ];
+
+  // Apply filters whenever filter criteria change
+  useEffect(() => {
+    let filtered = [...services];
+
+    // Apply status filter
+    if (statusFilter !== "all") {
+      filtered = filtered.filter(
+        (service) => service.status.toLowerCase() === statusFilter.toLowerCase()
+      );
+    }
+
+    // Apply category filter
+    if (categoryFilter !== "all") {
+      filtered = filtered.filter(
+        (service) =>
+          service.category.toLowerCase() === categoryFilter.toLowerCase()
+      );
+    }
+
+    // Apply search term filter
+    if (searchTerm) {
+      const term = searchTerm.toLowerCase();
+      filtered = filtered.filter(
+        (service) =>
+          service.title.toLowerCase().includes(term) ||
+          service.description.toLowerCase().includes(term) ||
+          service.category.toLowerCase().includes(term)
+      );
+    }
+
+    // Apply date filter
+    if (dateFilter) {
+      filtered = filtered.filter((service) => {
+        const serviceDate = new Date(
+          service.submissionDate || service.createdAt
+        );
+        const filterDate = new Date(dateFilter);
+        return (
+          serviceDate.getFullYear() === filterDate.getFullYear() &&
+          serviceDate.getMonth() === filterDate.getMonth() &&
+          serviceDate.getDate() === filterDate.getDate()
+        );
+      });
+    }
+
+    setFilteredServices(filtered);
+    setCurrentPage(1); // Reset to first page when filters change
+  }, [services, statusFilter, categoryFilter, searchTerm, dateFilter]);
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (!event.target.closest(".relative")) {
+        setShowStatusPopup(null);
+      }
+    };
+    document.addEventListener("click", handleClickOutside);
+    return () => {
+      document.removeEventListener("click", handleClickOutside);
+    };
+  }, []);
+  // Get current services for pagination
+  const indexOfLastService = currentPage * servicesPerPage;
+  const indexOfFirstService = indexOfLastService - servicesPerPage;
+  const currentServices = filteredServices.slice(
+    indexOfFirstService,
+    indexOfLastService
+  );
+
+  // Change page
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
+  // Calculate total pages
+  const totalPages = Math.ceil(filteredServices.length / servicesPerPage);
 
   // Open service review modal
   const openReviewModal = (id) => {
@@ -146,6 +205,38 @@ const AdminHomePage = () => {
   const getServiceById = (id) => {
     return services.find((s) => s.id === id) || null;
   };
+  console.log(services, "asdfasdfasdfasdfasdfasfsdfsdafs");
+  // Calculate service stats
+  const totalServices = services.length;
+  const approvedServices = services.filter(
+    (s) => s.status === "approved"
+  ).length;
+  const pendingServices = services.filter((s) => s.status === "pending").length;
+  const rejectedServices = services.filter(
+    (s) => s.status === "rejected"
+  ).length;
+  const handleStatusChange = async (serviceId, newStatus) => {
+    try {
+      // Example: Send status update to backend
+      const response = updateServiceStatus(serviceId, newStatus);
+
+      if (!response.success) {
+        throw new Error("Failed to update status");
+      }
+
+      // Optional: Update state locally after success
+      setServices((prevServices) =>
+        prevServices.map((service) =>
+          service.id === serviceId ? { ...service, status: newStatus } : service
+        )
+      );
+
+      setShowStatusPopup(null); // Close popup after update
+    } catch (error) {
+      console.error("Status update failed:", error.message);
+      alert("Failed to change status. Please try again.");
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -191,12 +282,13 @@ const AdminHomePage = () => {
         </div>
 
         {/* Service Stats */}
+
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-4 mb-6">
           <div className="bg-white overflow-hidden shadow rounded-lg">
             <div className="px-4 py-5 sm:p-6">
               <div className="flex items-center">
                 <div className="flex-shrink-0 bg-indigo-100 rounded-md p-3">
-                  <i className="fas fa-list-alt text-indigo-600 text-xl"></i>
+                  <FaListAlt className="text-indigo-600 text-xl" />
                 </div>
                 <div className="ml-5 w-0 flex-1">
                   <dl>
@@ -205,7 +297,7 @@ const AdminHomePage = () => {
                     </dt>
                     <dd>
                       <div className="text-lg font-medium text-gray-900">
-                        {services.length}
+                        {totalServices}
                       </div>
                     </dd>
                   </dl>
@@ -218,7 +310,7 @@ const AdminHomePage = () => {
             <div className="px-4 py-5 sm:p-6">
               <div className="flex items-center">
                 <div className="flex-shrink-0 bg-green-100 rounded-md p-3">
-                  <i className="fas fa-check-circle text-green-600 text-xl"></i>
+                  <FaCheckCircle className="text-green-600 text-xl" />
                 </div>
                 <div className="ml-5 w-0 flex-1">
                   <dl>
@@ -227,7 +319,7 @@ const AdminHomePage = () => {
                     </dt>
                     <dd>
                       <div className="text-lg font-medium text-gray-900">
-                        {services.filter((s) => s.status === "Approved").length}
+                        {approvedServices}
                       </div>
                     </dd>
                   </dl>
@@ -240,7 +332,7 @@ const AdminHomePage = () => {
             <div className="px-4 py-5 sm:p-6">
               <div className="flex items-center">
                 <div className="flex-shrink-0 bg-yellow-100 rounded-md p-3">
-                  <i className="fas fa-clock text-yellow-600 text-xl"></i>
+                  <FaClock className="text-yellow-600 text-xl" />
                 </div>
                 <div className="ml-5 w-0 flex-1">
                   <dl>
@@ -249,7 +341,7 @@ const AdminHomePage = () => {
                     </dt>
                     <dd>
                       <div className="text-lg font-medium text-gray-900">
-                        {services.filter((s) => s.status === "Pending").length}
+                        {pendingServices}
                       </div>
                     </dd>
                   </dl>
@@ -262,7 +354,7 @@ const AdminHomePage = () => {
             <div className="px-4 py-5 sm:p-6">
               <div className="flex items-center">
                 <div className="flex-shrink-0 bg-red-100 rounded-md p-3">
-                  <i className="fas fa-times-circle text-red-600 text-xl"></i>
+                  <FaTimesCircle className="text-red-600 text-xl" />
                 </div>
                 <div className="ml-5 w-0 flex-1">
                   <dl>
@@ -271,7 +363,7 @@ const AdminHomePage = () => {
                     </dt>
                     <dd>
                       <div className="text-lg font-medium text-gray-900">
-                        {services.filter((s) => s.status === "Rejected").length}
+                        {rejectedServices}
                       </div>
                     </dd>
                   </dl>
@@ -298,6 +390,8 @@ const AdminHomePage = () => {
                 <select
                   id="status-filter"
                   className="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-10 pr-10 py-2 text-base border-gray-300 sm:text-sm rounded-md"
+                  value={statusFilter}
+                  onChange={(e) => setStatusFilter(e.target.value)}
                 >
                   <option value="all">All Statuses</option>
                   <option value="pending">Pending</option>
@@ -320,6 +414,8 @@ const AdminHomePage = () => {
                 <select
                   id="category-filter"
                   className="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-10 pr-10 py-2 text-base border-gray-300 sm:text-sm rounded-md"
+                  value={categoryFilter}
+                  onChange={(e) => setCategoryFilter(e.target.value)}
                 >
                   <option value="all">All Categories</option>
                   {categories.map((category, index) => (
@@ -344,8 +440,10 @@ const AdminHomePage = () => {
                 <input
                   type="text"
                   id="search"
-                  className="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-10 pr-10 py-2 text-sm border-gray-300 rounded-md"
+                  className="focus:ring-indigo-500 text-black focus:border-indigo-500 block w-full pl-10 pr-10 py-2 text-sm border-gray-300 rounded-md"
                   placeholder="Search services..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
                 />
               </div>
             </div>
@@ -363,7 +461,9 @@ const AdminHomePage = () => {
                 <input
                   type="date"
                   id="date-filter"
-                  className="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-10 pr-10 py-2 text-sm border-gray-300 rounded-md"
+                  className="focus:ring-indigo-500 text-black focus:border-indigo-500 block w-full pl-10 pr-10 py-2 text-sm border-gray-300 rounded-md"
+                  value={dateFilter}
+                  onChange={(e) => setDateFilter(e.target.value)}
                 />
               </div>
             </div>
@@ -414,82 +514,159 @@ const AdminHomePage = () => {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {services.map((service) => (
-                <tr key={service.id}>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex items-center">
-                      <div className="h-10 w-10 flex-shrink-0">
-                        <img
-                          className="h-10 w-10 rounded-md object-cover object-top"
-                          src={service.images[0]}
-                          alt=""
-                        />
-                      </div>
-                      <div className="ml-4">
-                        <div className="text-sm font-medium text-gray-900">
-                          {service.title}
+              {currentServices.length > 0 ? (
+                currentServices.map((service) => (
+                  <tr key={service.id}>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex items-center">
+                        <div className="h-10 w-10 flex-shrink-0">
+                          <img
+                            className="h-10 w-10 rounded-md object-cover object-top"
+                            src={service.images[0]}
+                            alt=""
+                          />
                         </div>
-                        <div className="text-xs text-gray-500 truncate max-w-xs">
-                          {service.description.substring(0, 60)}...
+                        <div className="ml-4">
+                          <div className="text-sm font-medium text-gray-900">
+                            {service.title}
+                          </div>
+                          <div className="text-xs text-gray-500 truncate max-w-xs">
+                            {service.description.substring(0, 60)}...
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-900">
-                      {service.category}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-900">
-                      ${service.price.toLocaleString()}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span
-                      className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                        service.status === "Approved"
-                          ? "bg-green-100 text-green-800"
-                          : service.status === "Rejected"
-                          ? "bg-red-100 text-red-800"
-                          : "bg-yellow-100 text-yellow-800"
-                      }`}
-                    >
-                      {service.status}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {service.submissionDate}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    <button
-                      onClick={() => openReviewModal(service.id)}
-                      className="text-indigo-600 hover:text-indigo-900 mr-3 cursor-pointer"
-                      title="Review"
-                    >
-                      <i className="fas fa-eye"></i>
-                    </button>
-                    {service.status === "Pending" && (
-                      <>
-                        <button
-                          onClick={() => openApproveModal(service.id)}
-                          className="text-green-600 hover:text-green-900 mr-3 cursor-pointer"
-                          title="Approve"
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm text-gray-900">
+                        {service.category}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm text-gray-900">
+                        ${service.price.toLocaleString()}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span
+                        className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                          service.status === "approved"
+                            ? "bg-green-100 text-green-800"
+                            : service.status === "rejected"
+                            ? "bg-red-100 text-red-800"
+                            : "bg-yellow-100 text-yellow-800"
+                        }`}
+                        onClick={(e) => {
+                          e.stopPropagation(), setShowStatusPopup(service.id);
+                        }}
+                      >
+                        {service.status}
+                      </span>
+
+                      {/* Status change popup */}
+                      <div className="relative inline-block">
+                        <span
+                          onClick={() => {
+                            const allStatuses = [
+                              "pending",
+                              "approved",
+                              "rejected",
+                            ];
+                            const availableStatuses = allStatuses.filter(
+                              (s) => s.toLowerCase() !== service.status
+                            );
+                            setShowStatusPopup(
+                              showStatusPopup === service.id
+                                ? false
+                                : service.id
+                            );
+                            setAvailableStatuses(availableStatuses);
+                            setStatusPopupServiceId(service.id);
+                          }}
+                          className="ml-2 cursor-pointer underline text-xs text-indigo-500"
+                          title="Change status"
                         >
-                          <i className="fas fa-check"></i>
-                        </button>
-                        <button
-                          onClick={() => openRejectModal(service.id)}
-                          className="text-red-600 hover:text-red-900 cursor-pointer"
-                          title="Reject"
-                        >
-                          <i className="fas fa-times"></i>
-                        </button>
-                      </>
-                    )}
+                          edit{" "}
+                        </span>
+
+                        {showStatusPopup === service.id && (
+                          <div
+                            className="absolute z-10  mt-2 -right-32 -bottom-6  bg-white border border-gray-200 rounded shadow-lg min-w-[120px]"
+                            style={{ zIndex: "1000!important" }}
+                          >
+                            {availableStatuses.map((status) => (
+                              <button
+                                key={status}
+                                onClick={() => {
+                                  handleStatusChange(service.id, status);
+                                  setShowStatusPopup(false);
+                                }}
+                                className={`block w-full !z-50 text-left px-4 py-2 text-sm hover:bg-indigo-50 ${
+                                  status === "approved"
+                                    ? "text-green-700"
+                                    : status === "rejected"
+                                    ? "text-red-700"
+                                    : "text-yellow-700"
+                                }`}
+                              >
+                                {status}
+                              </button>
+                            ))}
+                            <button
+                              onClick={() => setShowStatusPopup(false)}
+                              className="block w-full text-left px-4 py-2 text-xs text-gray-400 hover:bg-gray-50"
+                            >
+                              Cancel
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {service.submissionDate || service.createdAt
+                        ? new Date(
+                            service.submissionDate || service.createdAt
+                          ).toLocaleDateString()
+                        : "N/A"}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      <button
+                        onClick={() => openReviewModal(service.id)}
+                        className="text-indigo-600 hover:text-indigo-900 mr-3 cursor-pointer"
+                        title="Review"
+                      >
+                        <i className="fas fa-eye"></i>
+                      </button>
+                      {service.status === "Pending" && (
+                        <>
+                          <button
+                            onClick={() => openApproveModal(service.id)}
+                            className="text-green-600 hover:text-green-900 mr-3 cursor-pointer"
+                            title="Approve"
+                          >
+                            <i className="fas fa-check"></i>
+                          </button>
+                          <button
+                            onClick={() => openRejectModal(service.id)}
+                            className="text-red-600 hover:text-red-900 cursor-pointer"
+                            title="Reject"
+                          >
+                            <i className="fas fa-times"></i>
+                          </button>
+                        </>
+                      )}
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td
+                    colSpan="6"
+                    className="px-6 py-4 text-center text-sm text-gray-500"
+                  >
+                    No services found matching your criteria
                   </td>
                 </tr>
-              ))}
+              )}
             </tbody>
           </table>
         </div>
@@ -497,19 +674,41 @@ const AdminHomePage = () => {
         {/* Pagination */}
         <div className="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6 mt-4 rounded-lg shadow">
           <div className="flex-1 flex justify-between sm:hidden">
-            <button className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 !rounded-button cursor-pointer whitespace-nowrap">
+            <button
+              onClick={() => paginate(Math.max(1, currentPage - 1))}
+              disabled={currentPage === 1}
+              className={`relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white ${
+                currentPage === 1
+                  ? "opacity-50 cursor-not-allowed"
+                  : "hover:bg-gray-50"
+              }`}
+            >
               Previous
             </button>
-            <button className="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 !rounded-button cursor-pointer whitespace-nowrap">
+            <button
+              onClick={() => paginate(Math.min(totalPages, currentPage + 1))}
+              disabled={currentPage === totalPages}
+              className={`ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white ${
+                currentPage === totalPages
+                  ? "opacity-50 cursor-not-allowed"
+                  : "hover:bg-gray-50"
+              }`}
+            >
               Next
             </button>
           </div>
           <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
             <div>
               <p className="text-sm text-gray-700">
-                Showing <span className="font-medium">1</span> to{" "}
-                <span className="font-medium">{services.length}</span> of{" "}
-                <span className="font-medium">{services.length}</span> results
+                Showing{" "}
+                <span className="font-medium">{indexOfFirstService + 1}</span>{" "}
+                to{" "}
+                <span className="font-medium">
+                  {Math.min(indexOfLastService, filteredServices.length)}
+                </span>{" "}
+                of{" "}
+                <span className="font-medium">{filteredServices.length}</span>{" "}
+                results
               </p>
             </div>
             <div>
@@ -517,22 +716,74 @@ const AdminHomePage = () => {
                 className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px"
                 aria-label="Pagination"
               >
-                <button className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 cursor-pointer">
+                <button
+                  onClick={() => paginate(1)}
+                  disabled={currentPage === 1}
+                  className={`relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium ${
+                    currentPage === 1
+                      ? "text-gray-300 cursor-not-allowed"
+                      : "text-gray-500 hover:bg-gray-50"
+                  }`}
+                >
+                  <span className="sr-only">First</span>
+                  <FaAngleDoubleLeft className="text-xs" />
+                </button>
+
+                <button
+                  onClick={() => paginate(Math.max(1, currentPage - 1))}
+                  disabled={currentPage === 1}
+                  className={`relative inline-flex items-center px-2 py-2 border border-gray-300 bg-white text-sm font-medium ${
+                    currentPage === 1
+                      ? "text-gray-300 cursor-not-allowed"
+                      : "text-gray-500 hover:bg-gray-50"
+                  }`}
+                >
                   <span className="sr-only">Previous</span>
-                  <i className="fas fa-chevron-left text-xs"></i>
+                  <FaChevronLeft className="text-xs" />
                 </button>
-                <button className="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 cursor-pointer">
-                  1
-                </button>
-                <button className="relative inline-flex items-center px-4 py-2 border border-indigo-500 bg-indigo-50 text-sm font-medium text-indigo-600 cursor-pointer">
-                  2
-                </button>
-                <button className="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 cursor-pointer">
-                  3
-                </button>
-                <button className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 cursor-pointer">
+
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                  (number) => (
+                    <button
+                      key={number}
+                      onClick={() => paginate(number)}
+                      className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium ${
+                        currentPage === number
+                          ? "border-indigo-500 bg-indigo-50 text-indigo-600"
+                          : "border-gray-300 bg-white text-gray-700 hover:bg-gray-50"
+                      }`}
+                    >
+                      {number}
+                    </button>
+                  )
+                )}
+
+                <button
+                  onClick={() =>
+                    paginate(Math.min(totalPages, currentPage + 1))
+                  }
+                  disabled={currentPage === totalPages}
+                  className={`relative inline-flex items-center px-2 py-2 border border-gray-300 bg-white text-sm font-medium ${
+                    currentPage === totalPages
+                      ? "text-gray-300 cursor-not-allowed"
+                      : "text-gray-500 hover:bg-gray-50"
+                  }`}
+                >
                   <span className="sr-only">Next</span>
-                  <i className="fas fa-chevron-right text-xs"></i>
+                  <FaChevronRight className="text-xs" />
+                </button>
+
+                <button
+                  onClick={() => paginate(totalPages)}
+                  disabled={currentPage === totalPages}
+                  className={`relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium ${
+                    currentPage === totalPages
+                      ? "text-gray-300 cursor-not-allowed"
+                      : "text-gray-500 hover:bg-gray-50"
+                  }`}
+                >
+                  <span className="sr-only">Last</span>
+                  <FaAngleDoubleRight className="text-xs" />
                 </button>
               </nav>
             </div>

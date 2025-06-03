@@ -1,6 +1,5 @@
-// The exported code uses Tailwind CSS. Install Tailwind CSS in your dev environment to ensure all styles work.
-
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { fetchServices } from "../Api/serviceApi";
 
 const VenuesPage = () => {
   const [selectedVenueType, setSelectedVenueType] = useState("All Types");
@@ -14,6 +13,8 @@ const VenuesPage = () => {
   const [selectedVenue, setSelectedVenue] = useState();
   const [showCalendar, setShowCalendar] = useState(false);
   const [calendarVenue, setCalendarVenue] = useState();
+  const [venues, setVenues] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const toggleVenueTypeDropdown = () => {
     setShowVenueTypeDropdown(!showVenueTypeDropdown);
@@ -71,126 +72,22 @@ const VenuesPage = () => {
     setCalendarVenue(null);
   };
 
-  const venues = [
-    {
-      id: 1,
-      name: "Grand Ballroom",
-      type: "Banquet Hall",
-      image:
-        "https://readdy.ai/api/search-image?query=luxurious%20grand%20ballroom%20with%20crystal%20chandeliers%2C%20elegant%20table%20settings%2C%20high%20ceilings%2C%20and%20a%20spacious%20dance%20floor%2C%20perfect%20for%20large%20formal%20events%20and%20weddings%2C%20with%20soft%20ambient%20lighting%20and%20sophisticated%20decor&width=600&height=400&seq=11&orientation=landscape",
-      capacity: "200-500",
-      price: "$3,000-$7,000",
-      rating: 4.8,
-      reviews: 124,
-      description:
-        "An elegant ballroom with crystal chandeliers, perfect for weddings and formal events. Features a spacious dance floor and state-of-the-art sound system.",
-      amenities: ["Dance Floor", "Stage", "Premium Sound System"],
-      gallery: [
-        "https://readdy.ai/api/search-image?query=elegant%20ballroom%20setup%20with%20round%20tables%20and%20white%20linens%2C%20crystal%20chandeliers%20overhead%2C%20and%20a%20spacious%20dance%20floor%20in%20the%20center%2C%20perfect%20for%20weddings%20and%20galas%2C%20with%20soft%20ambient%20lighting&width=300&height=200&seq=12&orientation=landscape",
-        "https://readdy.ai/api/search-image?query=ballroom%20stage%20area%20with%20professional%20lighting%20setup%2C%20elegant%20backdrop%20and%20podium%20for%20speakers%2C%20perfect%20for%20corporate%20events%20and%20ceremonies%2C%20with%20sophisticated%20decor&width=300&height=200&seq=13&orientation=landscape",
-        "https://readdy.ai/api/search-image?query=ballroom%20entrance%20with%20grand%20doorway%2C%20elegant%20carpet%2C%20and%20floral%20arrangements%2C%20welcoming%20guests%20to%20a%20luxurious%20event%20space%2C%20with%20sophisticated%20lighting&width=300&height=200&seq=14&orientation=landscape",
-      ],
-    },
-    {
-      id: 2,
-      name: "Garden Terrace",
-      type: "Outdoor",
-      image:
-        "https://readdy.ai/api/search-image?query=beautiful%20outdoor%20garden%20terrace%20venue%20with%20lush%20greenery%2C%20string%20lights%20overhead%2C%20elegant%20seating%20arrangements%2C%20and%20stunning%20views%2C%20perfect%20for%20weddings%20and%20cocktail%20receptions%2C%20with%20natural%20lighting%20and%20sophisticated%20landscaping&width=600&height=400&seq=21&orientation=landscape",
-      capacity: "100-300",
-      price: "$2,500-$5,500",
-      rating: 4.9,
-      reviews: 98,
-      description:
-        "A stunning outdoor venue with lush gardens, perfect for spring and summer events. Features string lighting and panoramic views of the surrounding landscape.",
-      amenities: ["Outdoor Bar", "Covered Areas", "Garden Lighting"],
-      gallery: [
-        "https://readdy.ai/api/search-image?query=garden%20terrace%20seating%20area%20with%20elegant%20chairs%20and%20tables%2C%20surrounded%20by%20flowering%20plants%20and%20string%20lights%2C%20perfect%20for%20outdoor%20receptions%2C%20with%20natural%20lighting&width=300&height=200&seq=22&orientation=landscape",
-        "https://readdy.ai/api/search-image?query=outdoor%20bar%20setup%20on%20garden%20terrace%20with%20elegant%20countertop%2C%20glassware%20display%2C%20and%20professional%20bartenders%2C%20surrounded%20by%20greenery%2C%20with%20ambient%20lighting&width=300&height=200&seq=23&orientation=landscape",
-        "https://readdy.ai/api/search-image?query=garden%20terrace%20at%20night%20with%20string%20lights%20illuminating%20the%20space%2C%20creating%20a%20magical%20atmosphere%20for%20evening%20events%2C%20with%20elegant%20landscaping%20visible&width=300&height=200&seq=24&orientation=landscape",
-      ],
-    },
-    {
-      id: 3,
-      name: "Executive Conference Center",
-      type: "Conference Room",
-      image:
-        "https://readdy.ai/api/search-image?query=modern%20executive%20conference%20center%20with%20sleek%20boardroom%20table%2C%20ergonomic%20chairs%2C%20state-of-the-art%20presentation%20equipment%2C%20and%20floor-to-ceiling%20windows%20offering%20city%20views%2C%20perfect%20for%20corporate%20meetings%20and%20presentations%2C%20with%20professional%20lighting&width=600&height=400&seq=31&orientation=landscape",
-      capacity: "50-150",
-      price: "$1,500-$3,500",
-      rating: 4.7,
-      reviews: 76,
-      description:
-        "A professional conference center with state-of-the-art technology, perfect for corporate events and business meetings. Features high-speed internet and video conferencing capabilities.",
-      amenities: ["AV Equipment", "Whiteboard Walls", "Video Conferencing"],
-      gallery: [
-        "https://readdy.ai/api/search-image?query=conference%20room%20setup%20with%20u-shaped%20table%20arrangement%2C%20presentation%20screen%2C%20and%20ergonomic%20chairs%2C%20perfect%20for%20business%20meetings%2C%20with%20professional%20lighting&width=300&height=200&seq=32&orientation=landscape",
-        "https://readdy.ai/api/search-image?query=conference%20room%20technology%20hub%20with%20control%20panel%2C%20multiple%20screens%2C%20and%20connectivity%20options%2C%20showcasing%20advanced%20AV%20capabilities%2C%20with%20clean%20professional%20design&width=300&height=200&seq=33&orientation=landscape",
-        "https://readdy.ai/api/search-image?query=conference%20room%20breakout%20area%20with%20comfortable%20seating%2C%20coffee%20service%2C%20and%20networking%20space%2C%20adjacent%20to%20main%20meeting%20room%2C%20with%20professional%20atmosphere&width=300&height=200&seq=34&orientation=landscape",
-      ],
-    },
-    {
-      id: 4,
-      name: "Skyline Loft",
-      type: "Rooftop",
-      image:
-        "https://readdy.ai/api/search-image?query=modern%20rooftop%20venue%20with%20panoramic%20city%20skyline%20views%2C%20contemporary%20furniture%2C%20glass%20railings%2C%20and%20ambient%20lighting%2C%20perfect%20for%20cocktail%20parties%20and%20social%20gatherings%2C%20with%20sunset%20and%20city%20lights%20visible&width=600&height=400&seq=41&orientation=landscape",
-      capacity: "80-200",
-      price: "$3,500-$6,500",
-      rating: 4.9,
-      reviews: 112,
-      description:
-        "A modern rooftop venue with panoramic city views, perfect for cocktail parties and social gatherings. Features contemporary design and a retractable roof for all-weather use.",
-      amenities: ["Retractable Roof", "Lounge Seating", "City Views"],
-      gallery: [
-        "https://readdy.ai/api/search-image?query=rooftop%20lounge%20area%20with%20comfortable%20sectional%20seating%2C%20low%20tables%2C%20and%20mood%20lighting%2C%20overlooking%20city%20skyline%2C%20perfect%20for%20VIP%20events%2C%20with%20evening%20atmosphere&width=300&height=200&seq=42&orientation=landscape",
-        "https://readdy.ai/api/search-image?query=rooftop%20bar%20setup%20with%20illuminated%20countertop%2C%20high%20stools%2C%20and%20premium%20spirits%20display%2C%20with%20city%20lights%20in%20background%2C%20creating%20sophisticated%20ambiance&width=300&height=200&seq=43&orientation=landscape",
-        "https://readdy.ai/api/search-image?query=rooftop%20dining%20arrangement%20with%20elegant%20tables%2C%20chair%20covers%2C%20and%20centerpieces%2C%20set%20against%20dramatic%20city%20backdrop%2C%20perfect%20for%20upscale%20events&width=300&height=200&seq=44&orientation=landscape",
-      ],
-    },
-    {
-      id: 5,
-      name: "Heritage Hall",
-      type: "Historic Venue",
-      image:
-        "https://readdy.ai/api/search-image?query=historic%20venue%20with%20architectural%20details%2C%20arched%20windows%2C%20wooden%20beams%2C%20and%20elegant%20chandeliers%2C%20renovated%20with%20modern%20amenities%20while%20preserving%20classic%20character%2C%20perfect%20for%20sophisticated%20events%20with%20a%20touch%20of%20history%2C%20with%20warm%20ambient%20lighting&width=600&height=400&seq=51&orientation=landscape",
-      capacity: "100-250",
-      price: "$2,800-$5,800",
-      rating: 4.7,
-      reviews: 89,
-      description:
-        "A beautifully restored historic venue with architectural details, perfect for clients seeking character and elegance. Features original woodwork and modern amenities.",
-      amenities: [
-        "Architectural Details",
-        "Mezzanine Level",
-        "Grand Staircase",
-      ],
-      gallery: [
-        "https://readdy.ai/api/search-image?query=historic%20hall%20interior%20with%20ornate%20ceiling%20details%2C%20wall%20sconces%2C%20and%20period%20furniture%2C%20showcasing%20architectural%20heritage%2C%20with%20elegant%20lighting&width=300&height=200&seq=52&orientation=landscape",
-        "https://readdy.ai/api/search-image?query=grand%20staircase%20in%20historic%20venue%20with%20ornate%20banister%2C%20red%20carpet%2C%20and%20classic%20artwork%20on%20walls%2C%20perfect%20for%20dramatic%20entrances%20and%20photo%20opportunities&width=300&height=200&seq=53&orientation=landscape",
-        "https://readdy.ai/api/search-image?query=mezzanine%20level%20of%20historic%20hall%20overlooking%20main%20floor%2C%20with%20antique%20railings%20and%20vintage-inspired%20furnishings%2C%20offering%20unique%20perspective%20of%20events%20below&width=300&height=200&seq=54&orientation=landscape",
-      ],
-    },
-    {
-      id: 6,
-      name: "Coastal Pavilion",
-      type: "Waterfront",
-      image:
-        "https://readdy.ai/api/search-image?query=waterfront%20pavilion%20venue%20with%20floor-to-ceiling%20windows%20overlooking%20ocean%20or%20lake%2C%20white%20drapes%2C%20elegant%20seating%2C%20and%20natural%20light%2C%20perfect%20for%20weddings%20and%20upscale%20events%2C%20with%20water%20views%20and%20sophisticated%20decor&width=600&height=400&seq=61&orientation=landscape",
-      capacity: "150-400",
-      price: "$4,000-$8,000",
-      rating: 4.8,
-      reviews: 105,
-      description:
-        "A stunning waterfront venue with floor-to-ceiling windows, perfect for clients who want scenic views. Features a covered deck and direct access to the shoreline.",
-      amenities: ["Water Views", "Private Beach", "Sunset Deck"],
-      gallery: [
-        "https://readdy.ai/api/search-image?query=waterfront%20pavilion%20interior%20with%20tables%20set%20for%20a%20wedding%20reception%2C%20white%20drapes%2C%20floral%20centerpieces%2C%20and%20panoramic%20water%20views%20through%20large%20windows&width=300&height=200&seq=62&orientation=landscape",
-        "https://readdy.ai/api/search-image?query=private%20beach%20area%20adjacent%20to%20pavilion%20venue%2C%20with%20ceremony%20setup%2C%20white%20chairs%2C%20floral%20arch%2C%20and%20ocean%20backdrop%2C%20perfect%20for%20waterfront%20weddings&width=300&height=200&seq=63&orientation=landscape",
-        "https://readdy.ai/api/search-image?query=sunset%20deck%20of%20coastal%20pavilion%20with%20lounge%20furniture%2C%20string%20lights%2C%20and%20unobstructed%20views%20of%20water%20at%20golden%20hour%2C%20creating%20romantic%20atmosphere%20for%20events&width=300&height=200&seq=64&orientation=landscape",
-      ],
-    },
-  ];
+  // Fetch venues using useEffect
+  useEffect(() => {
+    const fetchServiceData = async () => {
+      try {
+        const servicesData = await fetchServices("VENUS");
+        setVenues(servicesData || []);
+      } catch (error) {
+        console.error("Error fetching services:", error);
+        setVenues([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchServiceData();
+  }, []);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -374,101 +271,125 @@ const VenuesPage = () => {
 
         {/* Venues Grid */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {venues.map((venue) => (
-              <div
-                key={venue.id}
-                className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition"
-              >
-                <div className="relative h-64 overflow-hidden">
-                  <img
-                    src={venue.image}
-                    alt={venue.name}
-                    className="w-full h-full object-cover object-center transition-transform duration-500 hover:scale-105"
-                  />
-                  <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm rounded-full px-3 py-1 text-sm font-medium text-indigo-700">
-                    {venue.type}
-                  </div>
-                </div>
-                <div className="p-6">
-                  <div className="flex justify-between items-start mb-2">
-                    <h3 className="text-xl font-bold text-gray-900">
-                      {venue.name}
-                    </h3>
-                    <div className="flex items-center">
-                      <i className="fas fa-star text-yellow-400 mr-1"></i>
-                      <span className="text-gray-700 font-medium">
-                        {venue.rating}
-                      </span>
-                      <span className="text-gray-500 text-sm ml-1">
-                        ({venue.reviews})
-                      </span>
+          {loading ? (
+            <div className="text-center text-gray-600">Loading...</div>
+          ) : venues.length === 0 ? (
+            <div className="text-center text-gray-600">
+              Currently, we don't have any venues.
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {venues.map((venue) => (
+                <div
+                  key={venue.id}
+                  className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition"
+                >
+                  <div className="relative h-64 overflow-hidden">
+                    <img
+                      src={
+                        venue.images[0] ||
+                        "https://readdy.ai/api/search-image?query=generic%20event%20venue&width=600&height=400&seq=70&orientation=landscape"
+                      }
+                      alt={venue.title}
+                      className="w-full h-full object-cover object-center transition-transform duration-500 hover:scale-105"
+                    />
+                    <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm rounded-full px-3 py-1 text-sm font-medium text-indigo-700">
+                      {venue.category || "Venue"}
                     </div>
                   </div>
-                  <p className="text-gray-600 mb-4">{venue.description}</p>
-
-                  <div className="flex flex-wrap gap-2 mb-4">
-                    {venue.amenities.map((amenity, index) => (
-                      <span
-                        key={index}
-                        className="bg-indigo-50 text-indigo-700 text-xs font-medium px-2.5 py-1 rounded-full"
-                      >
-                        {amenity}
-                      </span>
-                    ))}
-                  </div>
-
-                  <div className="flex justify-between items-center text-sm text-gray-700 mb-4">
-                    <div className="flex items-center">
-                      <i className="fas fa-users mr-2 text-indigo-600"></i>
-                      <span>{venue.capacity} guests</span>
-                    </div>
-                    <div className="flex items-center">
-                      <i className="fas fa-dollar-sign mr-2 text-indigo-600"></i>
-                      <span>{venue.price}</span>
-                    </div>
-                  </div>
-
-                  <div className="flex space-x-3">
-                    <button
-                      onClick={() => openBookingForm(venue.name)}
-                      className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white py-2 rounded-md transition !rounded-button whitespace-nowrap cursor-pointer"
-                    >
-                      <i className="fas fa-clipboard-check mr-2"></i>
-                      Book Now
-                    </button>
-                    <button
-                      onClick={() => openCalendar(venue.name)}
-                      className="bg-gray-100 hover:bg-gray-200 text-gray-700 p-2 rounded-md transition !rounded-button whitespace-nowrap cursor-pointer"
-                    >
-                      <i className="fas fa-calendar-alt"></i>
-                    </button>
-                  </div>
-                </div>
-
-                {/* Gallery Section */}
-                <div className="px-6 pb-6">
-                  <h4 className="text-lg font-semibold text-gray-900 mb-3">
-                    Gallery
-                  </h4>
-                  <div className="grid grid-cols-3 gap-2">
-                    {venue.gallery.map((image, index) => (
-                      <div
-                        key={index}
-                        className="h-24 overflow-hidden rounded-md"
-                      >
-                        <img
-                          src={image}
-                          alt={`${venue.name} gallery ${index + 1}`}
-                          className="w-full h-full object-cover object-center hover:scale-110 transition-transform duration-300 cursor-pointer"
-                        />
+                  <div className="p-6">
+                    <div className="flex justify-between items-start mb-2">
+                      <h3 className="text-xl font-bold text-gray-900">
+                        {venue.title}
+                      </h3>
+                      <div className="flex items-center">
+                        <i className="fas fa-star text-yellow-400 mr-1"></i>
+                        <span className="text-gray-700 font-medium">
+                          {venue.rating || 4.5}
+                        </span>
+                        <span className="text-gray-500 text-sm ml-1">
+                          (
+                          {venue.reviews || Math.floor(Math.random() * 50) + 50}
+                          )
+                        </span>
                       </div>
-                    ))}
+                    </div>
+                    <p className="text-gray-600 mb-4">{venue.description}</p>
+
+                    <div className="flex flex-wrap gap-2 mb-4">
+                      {(venue.amenities || ["WiFi", "Parking"]).map(
+                        (amenity, index) => (
+                          <span
+                            key={index}
+                            className="bg-indigo-50 text-indigo-700 text-xs font-medium px-2.5 py-1 rounded-full"
+                          >
+                            {amenity}
+                          </span>
+                        )
+                      )}
+                    </div>
+
+                    <div className="flex justify-between items-center text-sm text-gray-700 mb-4">
+                      <div className="flex items-center">
+                        <i className="fas fa-users mr-2 text-indigo-600"></i>
+                        <span>{venue.capacity || "100-500"} guests</span>
+                      </div>
+                      <div className="flex items-center">
+                        <i className="fas fa-dollar-sign mr-2 text-indigo-600"></i>
+                        <span>
+                          {venue.currency || "$"}
+                          {venue.price.toLocaleString() || "2000-5000"}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="flex space-x-3">
+                      <button
+                        onClick={() => openBookingForm(venue.title)}
+                        className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white py-2 rounded-md transition !rounded-button whitespace-nowrap cursor-pointer"
+                      >
+                        <i className="fas fa-clipboard-check mr-2"></i>
+                        Book Now
+                      </button>
+                      <button
+                        onClick={() => openCalendar(venue.title)}
+                        className="bg-gray-100 hover:bg-gray-200 text-gray-700 p-2 rounded-md transition !rounded-button whitespace-nowrap cursor-pointer"
+                      >
+                        <i className="fas fa-calendar-alt"></i>
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Gallery Section */}
+                  <div className="px-6 pb-6">
+                    <h4 className="text-lg font-semibold text-gray-900 mb-3">
+                      Gallery
+                    </h4>
+                    <div className="grid grid-cols-3 gap-2">
+                      {(
+                        venue.images?.slice(1, 4) || [
+                          "https://readdy.ai/api/search-image?query=generic%20venue%20interior&width=300&height=200&seq=71&orientation=landscape",
+                          "https://readdy.ai/api/search-image?query=generic%20venue%20setup&width=300&height=200&seq=72&orientation=landscape",
+                          "https://readdy.ai/api/search-image?query=generic%20venue%20exterior&width=300&height=200&seq=73&orientation=landscape",
+                        ]
+                      ).map((image, index) => (
+                        <div
+                          key={index}
+                          className="h-24 overflow-hidden rounded-md"
+                        >
+                          <img
+                            src={image}
+                            alt={`${venue.title} gallery ${index + 1}`}
+                            className="w-full h-full object-cover object-center hover:scale-110 transition-transform duration-300 cursor-pointer"
+                          />
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
       </main>
 
@@ -721,7 +642,7 @@ const VenuesPage = () => {
                 </button>
               </div>
 
-              <form className="space-y-6">
+              <div className="space-y-6">
                 <div>
                   <label
                     htmlFor="event-date"
@@ -879,7 +800,7 @@ const VenuesPage = () => {
                 >
                   Submit Inquiry
                 </button>
-              </form>
+              </div>
             </div>
           </div>
         </div>

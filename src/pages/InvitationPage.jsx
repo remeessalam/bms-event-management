@@ -1,8 +1,13 @@
-// The exported code uses Tailwind CSS. Install Tailwind CSS in your dev environment to ensure all styles work.
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { fetchServices } from "../Api/serviceApi";
+import { Link } from "react-router-dom";
+
 const InvitationPage = () => {
   const [activeFilter, setActiveFilter] = useState("All");
   const [activeStyle, setActiveStyle] = useState("wedding");
+  const [services, setServices] = useState([]);
+  const [loading, setLoading] = useState(true);
+
   const handleStyleChange = (style) => {
     const allButtons = [
       "allStylesBtn",
@@ -25,34 +30,49 @@ const InvitationPage = () => {
     setActiveStyle(style);
   };
 
+  useEffect(() => {
+    const fetchServiceData = async () => {
+      try {
+        const servicesData = await fetchServices("INVITATIONS");
+        setServices(servicesData || []);
+      } catch (error) {
+        console.error("Error fetching services:", error);
+        setServices([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchServiceData();
+  }, []);
+
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Main Content */}
       <main>
         {/* Breadcrumb Navigation */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <nav className="flex" aria-label="Breadcrumb">
             <ol className="inline-flex items-center space-x-1 md:space-x-3">
               <li className="inline-flex items-center">
-                <a
-                  href="https://readdy.ai/home/bcdd3814-0fce-4c39-9e2f-e221ce2b69ce/2fbd65e2-4c06-4bc3-8907-943ba8e2787c"
+                <Link
+                  to={"/"}
                   data-readdy="true"
                   className="inline-flex items-center text-sm font-medium text-gray-700 hover:text-indigo-600 cursor-pointer"
                 >
                   <i className="fas fa-home mr-2"></i>
-                  Dashboard
-                </a>
+                  home
+                </Link>
               </li>
               <li>
                 <div className="flex items-center">
                   <i className="fas fa-chevron-right text-gray-400 mx-2 text-sm"></i>
-                  <a
-                    href="https://readdy.ai/home/bcdd3814-0fce-4c39-9e2f-e221ce2b69ce/2fbd65e2-4c06-4bc3-8907-943ba8e2787c"
+                  <Link
+                    to={"/invitation"}
                     data-readdy="true"
                     className="text-sm font-medium text-gray-700 hover:text-indigo-600 cursor-pointer"
                   >
                     Categories
-                  </a>
+                  </Link>
                 </div>
               </li>
               <li aria-current="page">
@@ -66,6 +86,7 @@ const InvitationPage = () => {
             </ol>
           </nav>
         </div>
+
         {/* Category Header */}
         <div className="bg-gradient-to-r from-indigo-700 to-purple-700 text-white">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -99,11 +120,12 @@ const InvitationPage = () => {
             </div>
             <div className="mt-6 flex items-center">
               <span className="bg-white/20 px-3 py-1 rounded-full text-sm">
-                2 Services Available
+                {services.length} Services Available
               </span>
             </div>
           </div>
         </div>
+
         {/* Filter Tabs */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 border-b border-gray-200">
           <div className="flex items-center justify-between">
@@ -151,167 +173,121 @@ const InvitationPage = () => {
             </div>
           </div>
         </div>
+
         {/* Services Section */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
-            {/* Service 1 */}
-            <div className="bg-white shadow-md rounded-lg overflow-hidden hover:shadow-lg transition">
-              <div
-                className="h-56 bg-cover bg-center"
-                style={{
-                  backgroundImage: `url('https://readdy.ai/api/search-image?query=elegant%20digital%20invitation%20design%20with%20modern%20typography%20and%20floral%20elements%20on%20a%20tablet%20screen%2C%20professional%20e-invitation%20with%20RSVP%20functionality%2C%20displayed%20on%20a%20clean%20white%20desk%20with%20minimal%20decoration%20and%20soft%20natural%20lighting&width=600&height=300&seq=101&orientation=landscape')`,
-                }}
-              >
-                <div className="h-full w-full bg-gradient-to-t from-black/60 to-transparent flex items-end">
-                  <div className="p-4 text-white">
-                    <span className="bg-blue-500 text-xs font-bold px-2 py-1 rounded-full uppercase tracking-wide">
-                      Digital
-                    </span>
-                  </div>
-                </div>
-              </div>
-              <div className="p-6">
-                <div className="flex justify-between items-start">
-                  <div>
-                    <h3 className="text-xl font-bold text-gray-900">
-                      Digital Invitation Suite
-                    </h3>
-                    <div className="flex items-center mt-1">
-                      <div className="flex text-yellow-400">
-                        <i className="fas fa-star"></i>
-                        <i className="fas fa-star"></i>
-                        <i className="fas fa-star"></i>
-                        <i className="fas fa-star"></i>
-                        <i className="fas fa-star-half-alt"></i>
+          {loading ? (
+            <div className="text-center text-gray-600">Loading...</div>
+          ) : services.length === 0 ? (
+            <div className="text-center text-gray-600">
+              Currently, we don't have any invitation services.
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
+              {services.map((service) => (
+                <div
+                  key={service.id}
+                  className="bg-white shadow-md rounded-lg overflow-hidden hover:shadow-lg transition"
+                >
+                  <div
+                    className="h-56 bg-cover bg-center"
+                    style={{
+                      backgroundImage: `url(${
+                        service.images[0] ||
+                        "https://readdy.ai/api/search-image?query=generic%20invitation%20design&width=600&height=300&seq=100&orientation=landscape"
+                      })`,
+                    }}
+                  >
+                    <div className="h-full w-full bg-gradient-to-t from-black/60 to-transparent flex items-end">
+                      <div className="p-4 text-white">
+                        <span
+                          className={`text-xs font-bold px-2 py-1 rounded-full uppercase tracking-wide ${
+                            service.type === "Digital"
+                              ? "bg-blue-500"
+                              : "bg-purple-500"
+                          }`}
+                        >
+                          {service.type || "Invitation"}
+                        </span>
                       </div>
-                      <span className="ml-2 text-sm text-gray-600">
-                        4.5 (28 reviews)
-                      </span>
                     </div>
                   </div>
-                  <div className="text-right">
-                    <p className="text-lg font-bold text-indigo-600">
-                      $75 - $150
-                    </p>
-                    <p className="text-sm text-gray-500">per design</p>
-                  </div>
-                </div>
-                <p className="mt-4 text-gray-600">
-                  Custom digital invitations with interactive RSVP features,
-                  animated elements, and personalized designs. Perfect for
-                  modern events with international guests.
-                </p>
-                <div className="mt-6 flex flex-wrap gap-2">
-                  <span className="bg-gray-100 text-gray-800 text-xs font-medium px-2.5 py-0.5 rounded">
-                    Animated
-                  </span>
-                  <span className="bg-gray-100 text-gray-800 text-xs font-medium px-2.5 py-0.5 rounded">
-                    RSVP Integration
-                  </span>
-                  <span className="bg-gray-100 text-gray-800 text-xs font-medium px-2.5 py-0.5 rounded">
-                    Mobile-friendly
-                  </span>
-                </div>
-                <div className="mt-6 flex justify-between items-center">
-                  <a
-                    href="https://readdy.ai/home/bcdd3814-0fce-4c39-9e2f-e221ce2b69ce/d1d777c2-17f1-4c0d-ab7e-08b56bc0c66b"
-                    data-readdy="true"
-                    className="text-indigo-600 hover:text-indigo-800 font-medium !rounded-button whitespace-nowrap cursor-pointer"
-                  >
-                    View Details
-                  </a>
-                  <div className="flex space-x-2">
-                    <button className="p-2 text-gray-500 hover:text-indigo-600 hover:bg-indigo-50 rounded-full !rounded-button whitespace-nowrap cursor-pointer">
-                      <i className="fas fa-edit"></i>
-                    </button>
-                    <button className="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-full !rounded-button whitespace-nowrap cursor-pointer">
-                      <i className="fas fa-trash-alt"></i>
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-            {/* Service 2 */}
-            <div className="bg-white shadow-md rounded-lg overflow-hidden hover:shadow-lg transition">
-              <div
-                className="h-56 bg-cover bg-center"
-                style={{
-                  backgroundImage: `url('https://readdy.ai/api/search-image?query=luxury%20printed%20wedding%20invitation%20suite%20with%20envelope%2C%20RSVP%20card%2C%20and%20details%20card%20on%20textured%20paper%20with%20gold%20foil%20accents%2C%20arranged%20on%20a%20white%20marble%20surface%20with%20minimal%20floral%20decoration%20and%20soft%20natural%20lighting&width=600&height=300&seq=102&orientation=landscape')`,
-                }}
-              >
-                <div className="h-full w-full bg-gradient-to-t from-black/60 to-transparent flex items-end">
-                  <div className="p-4 text-white">
-                    <span className="bg-purple-500 text-xs font-bold px-2 py-1 rounded-full uppercase tracking-wide">
-                      Printed
-                    </span>
-                  </div>
-                </div>
-              </div>
-              <div className="p-6">
-                <div className="flex justify-between items-start">
-                  <div>
-                    <h3 className="text-xl font-bold text-gray-900">
-                      Premium Printed Collection
-                    </h3>
-                    <div className="flex items-center mt-1">
-                      <div className="flex text-yellow-400">
-                        <i className="fas fa-star"></i>
-                        <i className="fas fa-star"></i>
-                        <i className="fas fa-star"></i>
-                        <i className="fas fa-star"></i>
-                        <i className="fas fa-star"></i>
+                  <div className="p-6">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <h3 className="text-xl font-bold text-gray-900">
+                          {service.title}
+                        </h3>
+                        <div className="flex items-center mt-1">
+                          <div className="flex text-yellow-400">
+                            {[...Array(Math.floor(service.rating || 4.5))].map(
+                              (_, i) => (
+                                <i key={i} className="fas fa-star"></i>
+                              )
+                            )}
+                            {(service.rating || 4.5) % 1 !== 0 && (
+                              <i className="fas fa-star-half-alt"></i>
+                            )}
+                          </div>
+                          <span className="ml-2 text-sm text-gray-600">
+                            {service.rating || 4.5} (
+                            {service.reviews ||
+                              Math.floor(Math.random() * 30) + 20}{" "}
+                            reviews)
+                          </span>
+                        </div>
                       </div>
-                      <span className="ml-2 text-sm text-gray-600">
-                        5.0 (42 reviews)
-                      </span>
+                      <div className="text-right">
+                        <p className="text-lg font-bold text-indigo-600">
+                          {service.currency || "$"}
+                          {service.price.toLocaleString() || "100-300"}
+                        </p>
+                        <p className="text-sm text-gray-500">
+                          {service.type === "Digital"
+                            ? "per design"
+                            : "per 100 sets"}
+                        </p>
+                      </div>
+                    </div>
+                    <p className="mt-4 text-gray-600">{service.description}</p>
+                    <div className="mt-6 flex flex-wrap gap-2">
+                      {(
+                        service.features || ["Custom Design", "Premium Quality"]
+                      ).map((feature, index) => (
+                        <span
+                          key={index}
+                          className="bg-gray-100 text-gray-800 text-xs font-medium px-2 py-1 rounded"
+                        >
+                          {feature}
+                        </span>
+                      ))}
+                    </div>
+                    <div className="mt-6 flex justify-between items-center">
+                      <a
+                        href="https://readdy.ai/home/bcdd3814-0fce-4c39-9e2f-e221ce2b69ce/d1d777c2-17f1-4c0d-ab7e-08b56bc0c66b"
+                        data-readdy="true"
+                        className="text-indigo-600 hover:text-indigo-800 font-medium !rounded-button whitespace-nowrap cursor-pointer"
+                      >
+                        View Details
+                      </a>
+                      <div className="flex space-x-2">
+                        <button className="p-2 text-gray-500 hover:text-indigo-600 hover:bg-indigo-50 rounded-full !rounded-button whitespace-nowrap cursor-pointer">
+                          <i className="fas fa-edit"></i>
+                        </button>
+                        <button className="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-full !rounded-button whitespace-nowrap cursor-pointer">
+                          <i className="fas fa-trash-alt"></i>
+                        </button>
+                      </div>
                     </div>
                   </div>
-                  <div className="text-right">
-                    <p className="text-lg font-bold text-indigo-600">
-                      $150 - $350
-                    </p>
-                    <p className="text-sm text-gray-500">per 100 sets</p>
-                  </div>
                 </div>
-                <p className="mt-4 text-gray-600">
-                  Luxury printed invitation suites including main invitation,
-                  RSVP cards, details card, and custom envelopes. Available with
-                  premium finishes like foil stamping and letterpress.
-                </p>
-                <div className="mt-6 flex flex-wrap gap-2">
-                  <span className="bg-gray-100 text-gray-800 text-xs font-medium px-2.5 py-0.5 rounded">
-                    Foil Stamping
-                  </span>
-                  <span className="bg-gray-100 text-gray-800 text-xs font-medium px-2.5 py-0.5 rounded">
-                    Letterpress
-                  </span>
-                  <span className="bg-gray-100 text-gray-800 text-xs font-medium px-2.5 py-0.5 rounded">
-                    Custom Envelopes
-                  </span>
-                </div>
-                <div className="mt-6 flex justify-between items-center">
-                  <a
-                    href="https://readdy.ai/home/bcdd3814-0fce-4c39-9e2f-e221ce2b69ce/d1d777c2-17f1-4c0d-ab7e-08b56bc0c66b"
-                    data-readdy="true"
-                    className="text-indigo-600 hover:text-indigo-800 font-medium !rounded-button whitespace-nowrap cursor-pointer"
-                  >
-                    View Details
-                  </a>
-                  <div className="flex space-x-2">
-                    <button className="p-2 text-gray-500 hover:text-indigo-600 hover:bg-indigo-50 rounded-full !rounded-button whitespace-nowrap cursor-pointer">
-                      <i className="fas fa-edit"></i>
-                    </button>
-                    <button className="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-full !rounded-button whitespace-nowrap cursor-pointer">
-                      <i className="fas fa-trash-alt"></i>
-                    </button>
-                  </div>
-                </div>
-              </div>
+              ))}
             </div>
-          </div>
+          )}
         </div>
+
         {/* Sample Designs Gallery */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 border-t border-gray-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-2xl font-bold text-gray-900">Sample Designs</h2>
             <div className="flex space-x-2">
@@ -325,7 +301,7 @@ const InvitationPage = () => {
               <button
                 id="weddingBtn"
                 onClick={() => handleStyleChange("wedding")}
-                className="px-3 py-1 text-sm bg-indigo-100 text-indigo-700 rounded-md hover:bg-indigo-200 transition !rounded-button whitespace-nowrap cursor-pointer"
+                className="px-3 py-1 text-sm bg-indigo-100 text-indigo-700 hover:bg-indigo-200 rounded-md transition !rounded-button whitespace-nowrap cursor-pointer"
               >
                 Wedding
               </button>
@@ -361,7 +337,7 @@ const InvitationPage = () => {
             </div>
             <div className="relative group rounded-lg overflow-hidden shadow-sm">
               <img
-                src="https://readdy.ai/api/search-image?query=romantic%20wedding%20invitation%20with%20watercolor%20floral%20design%20and%20rose%20gold%20calligraphy%20on%20ivory%20paper%2C%20delicate%20and%20elegant%20invitation%20design%20with%20matching%20envelope%2C%20arranged%20on%20a%20white%20surface%20with%20soft%20lighting&width=250&height=250&seq=206&orientation=squarish"
+                src="https://readdy.ai/api/search-image?query=romantic%20wedding%20invitation%20with%20watercolor%20floral%20design%20and%20rose%20gold%20calligraphy%20on%20ivory%20paper%2C%20delicate%20and%20elegant%20invitation%20design%20with%20matching%20envelope%2C%20arranged%20on%20a%20white%20surface%20with%20soft%20lighting&width=300&height=250&seq=150"
                 alt="Wedding invitation sample"
                 className="w-full h-48 object-cover object-top group-hover:scale-105 transition duration-300"
               />
@@ -374,7 +350,7 @@ const InvitationPage = () => {
             </div>
             <div className="relative group rounded-lg overflow-hidden shadow-sm">
               <img
-                src="https://readdy.ai/api/search-image?query=modern%20minimalist%20wedding%20invitation%20with%20geometric%20patterns%20and%20rose%20gold%20foil%20on%20white%20premium%20paper%2C%20contemporary%20wedding%20stationery%20with%20clean%20typography%2C%20arranged%20on%20a%20white%20surface%20with%20soft%20lighting&width=250&height=250&seq=207&orientation=squarish"
+                src="https://readdy.ai/api/search-image?query=modern%20minimalist%20wedding%20invitation%20with%20geometric%20patterns%20and%20rose%20gold%20foil%20on%20white%20premium%20paper%20with%20paper%2C%20%20contemporary%20wedding%20stationery%20with%20clean%20typography%2C%20arranging%20on%20a%20white%20surface%20with%20soft%20lighting&width=300&height=250&seq=175&orientation=squarish"
                 alt="Wedding invitation sample"
                 className="w-full h-48 object-cover object-top group-hover:scale-105 transition duration-300"
               />
@@ -419,6 +395,7 @@ const InvitationPage = () => {
             </button>
           </div>
         </div>
+
         {/* Customer Reviews */}
         <div className="bg-gray-50 border-t border-gray-200">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -445,7 +422,6 @@ const InvitationPage = () => {
               </div>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Review 1 */}
               <div className="bg-white p-6 rounded-lg shadow-sm">
                 <div className="flex items-start">
                   <div className="flex-shrink-0">
@@ -459,7 +435,7 @@ const InvitationPage = () => {
                         Jessica Miller
                       </h4>
                       <span className="ml-2 text-sm text-gray-500">
-                        • May 2, 2025
+                        May 2, 2025
                       </span>
                     </div>
                     <div className="flex text-yellow-400 mt-1">
@@ -483,7 +459,6 @@ const InvitationPage = () => {
                   </div>
                 </div>
               </div>
-              {/* Review 2 */}
               <div className="bg-white p-6 rounded-lg shadow-sm">
                 <div className="flex items-start">
                   <div className="flex-shrink-0">
@@ -497,7 +472,7 @@ const InvitationPage = () => {
                         David Rodriguez
                       </h4>
                       <span className="ml-2 text-sm text-gray-500">
-                        • April 18, 2025
+                        April 18, 2025
                       </span>
                     </div>
                     <div className="flex text-yellow-400 mt-1">
@@ -509,7 +484,7 @@ const InvitationPage = () => {
                     </div>
                     <p className="mt-2 text-gray-600">
                       We used the Digital Invitation Suite for our corporate
-                      event and it was perfect. The RSVP functionality made
+                      events and it was perfect. The RSVP functionality made
                       tracking attendance so much easier, and the design
                       perfectly matched our brand. Would definitely use again.
                     </p>
@@ -520,7 +495,6 @@ const InvitationPage = () => {
                   </div>
                 </div>
               </div>
-              {/* Review 3 */}
               <div className="bg-white p-6 rounded-lg shadow-sm">
                 <div className="flex items-start">
                   <div className="flex-shrink-0">
@@ -534,7 +508,7 @@ const InvitationPage = () => {
                         Aisha Thomas
                       </h4>
                       <span className="ml-2 text-sm text-gray-500">
-                        • April 10, 2025
+                        April 10, 2025
                       </span>
                     </div>
                     <div className="flex text-yellow-400 mt-1">
@@ -557,7 +531,6 @@ const InvitationPage = () => {
                   </div>
                 </div>
               </div>
-              {/* Review 4 */}
               <div className="bg-white p-6 rounded-lg shadow-sm">
                 <div className="flex items-start">
                   <div className="flex-shrink-0">
@@ -571,7 +544,7 @@ const InvitationPage = () => {
                         Michael Kim
                       </h4>
                       <span className="ml-2 text-sm text-gray-500">
-                        • March 28, 2025
+                        March 28, 2025
                       </span>
                     </div>
                     <div className="flex text-yellow-400 mt-1">
@@ -583,9 +556,8 @@ const InvitationPage = () => {
                     </div>
                     <p className="mt-2 text-gray-600">
                       I needed digital invitations for my birthday party and
-                      these were perfect! The animated elements were a fun touch
-                      and everyone loved them. The mobile responsiveness worked
-                      great for all my guests.
+                      these were perfect! The designs were stunning, and the
+                      mobile responsiveness worked great for all my guests.
                     </p>
                     <div className="mt-3 text-sm text-gray-500">
                       <span className="font-medium">Purchased:</span> Digital
@@ -602,9 +574,10 @@ const InvitationPage = () => {
             </div>
           </div>
         </div>
+
         {/* Add New Service Button (Floating) */}
         <div className="fixed bottom-8 right-8">
-          <button className="bg-indigo-600 text-white p-4 rounded-full shadow-lg hover:bg-indigo-700 transition flex items-center justify-center !rounded-button whitespace-nowrap cursor-pointer">
+          <button className="bg-indigo-600 text-white p-4 rounded-full shadow-lg hover:bg-indigo-700 transition !rounded-full whitespace-nowrap cursor-pointer">
             <i className="fas fa-plus text-xl"></i>
           </button>
         </div>
@@ -612,4 +585,5 @@ const InvitationPage = () => {
     </div>
   );
 };
+
 export default InvitationPage;
