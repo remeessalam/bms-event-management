@@ -1,11 +1,14 @@
 import axios from "axios";
+import toast from "react-hot-toast";
 
 const BASE_URL = "http://localhost:5050/api";
 
-export const getAdminServices = async () => {
+export const getAdminServices = async (params) => {
   try {
     const token = localStorage.getItem("jwtToken");
+    console.log("Fetching services with params:", params);
     const response = await axios.get(`${BASE_URL}/admin/services`, {
+      params,
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -13,7 +16,7 @@ export const getAdminServices = async () => {
 
     console.log("Fetched services:", response.data.success);
     if (!response.data.success) throw new Error("Failed to fetch services");
-    const data = response.data.data;
+    const data = response.data;
     console.log("Fetched services:", data);
     return data;
   } catch (error) {
@@ -29,7 +32,7 @@ export const updateServiceStatus = async (serviceId, newStatus) => {
       `${BASE_URL}/admin/services/${serviceId}/status`,
       {
         status: newStatus,
-        statusReason:
+        reason:
           newStatus === "approved"
             ? "Service meets all requirements"
             : "Service does not meet all requirements",
@@ -42,9 +45,17 @@ export const updateServiceStatus = async (serviceId, newStatus) => {
     );
 
     console.log("Service status updated:", response.data.success);
-    if (!response.data.success)
+    if (!response.data.success) {
+      toast.error(response.data.message || "Failed to update service status");
       throw new Error("Failed to update service status");
-    return response.data.data;
+    }
+    console.log("Response from status update:", response);
+    toast.success(
+      response.data.message || "Service status updated successfully"
+    );
+
+    // const data = await response.data.json();
+    return response.data;
   } catch (error) {
     console.error("Error updating service status:", error);
     throw error;

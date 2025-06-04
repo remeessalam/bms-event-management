@@ -12,19 +12,28 @@ import {
   FaChevronRight,
   FaAngleDoubleRight,
 } from "react-icons/fa";
-import axios from "axios";
 const AdminHomePage = () => {
   // State for services
 
-  const [showStatusPopup, setShowStatusPopup] = useState(null); // service.id or null
-  const [availableStatuses, setAvailableStatuses] = useState([]); // ['Pending', 'Approved', 'Rejected'] minus current
+  const [showStatusPopup, setShowStatusPopup] = useState(null);
+  const [availableStatuses, setAvailableStatuses] = useState([]);
   const [statusPopupServiceId, setStatusPopupServiceId] = useState(null);
   const [services, setServices] = useState([]);
+  const [loading, setLoading] = useState(true);
+
   // State for filtered services
   const [filteredServices, setFilteredServices] = useState([]);
   // State for pagination
   const [currentPage, setCurrentPage] = useState(1);
   const [servicesPerPage] = useState(5);
+  const [pagination, setPagination] = useState({
+    currentPage: 1,
+    totalPages: 1,
+    totalItems: 0,
+    itemsPerPage: 10,
+    hasNextPage: false,
+    hasPreviousPage: false,
+  });
   // State for filters
   const [statusFilter, setStatusFilter] = useState("all");
   const [categoryFilter, setCategoryFilter] = useState("all");
@@ -47,29 +56,69 @@ const AdminHomePage = () => {
     }
   }, []);
 
+  // Fetch services with pagination and filters
+  const fetchServices = async () => {
+    try {
+      setLoading(true);
+      const params = {
+        page: pagination.currentPage,
+        limit: pagination.itemsPerPage,
+        ...(statusFilter !== "all" && { status: statusFilter }),
+        ...(categoryFilter !== "all" && { category: categoryFilter }),
+        ...(searchTerm && { search: searchTerm }),
+        ...(dateFilter && { date: dateFilter }),
+      };
+      console.log("Fetching services with params:", params);
+
+      const response = await getAdminServices(params);
+      setServices(response.data);
+      console.log(response, services, "responsesafasdf");
+      setPagination({
+        currentPage: response.pagination.currentPage,
+        totalPages: response.pagination.totalPages,
+        totalItems: response.pagination.totalItems,
+        itemsPerPage: response.pagination.itemsPerPage,
+        hasNextPage: response.pagination.hasNextPage,
+        hasPreviousPage: response.pagination.hasPreviousPage,
+      });
+    } catch (error) {
+      console.error("Error fetching services:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchServices = async () => {
-      try {
-        const services = await getAdminServices();
-        setServices(services || []);
-        setFilteredServices(services || []);
-      } catch (error) {
-        console.error("Error fetching services:", error);
-      }
-    };
+    // const fetchServices = async () => {
+    //   try {
+    //     const services = await getAdminServices();
+    //     setServices(services || []);
+    //     setFilteredServices(services || []);
+    //   } catch (error) {
+    //     console.error("Error fetching services:", error);
+    //   }
+    // };
     fetchServices();
-  }, []);
+  }, [
+    pagination.currentPage,
+    statusFilter,
+    categoryFilter,
+    searchTerm,
+    dateFilter,
+  ]);
+  useEffect(() => {
+    setPagination((prev) => ({ ...prev, currentPage: 1 }));
+  }, [statusFilter, categoryFilter, searchTerm, dateFilter]);
 
   // Categories
   const categories = [
     "Photography",
-    "Catering",
+    "Catring",
     "Venue",
-    "Entertainment",
     "Decoration",
-    "Transportation",
-    "Accommodation",
+    "Sound_DJ",
   ];
+  //  *           enum: [CATRING, DECORATION, PHOTOGRAPHY, SOUND_DJ, VENUS, INVITATIONS]
 
   // Apply filters whenever filter criteria change
   useEffect(() => {
@@ -218,8 +267,8 @@ const AdminHomePage = () => {
   const handleStatusChange = async (serviceId, newStatus) => {
     try {
       // Example: Send status update to backend
-      const response = updateServiceStatus(serviceId, newStatus);
-
+      const response = await updateServiceStatus(serviceId, newStatus);
+      console.log("Response from status update:", response);
       if (!response.success) {
         throw new Error("Failed to update status");
       }
@@ -237,6 +286,12 @@ const AdminHomePage = () => {
       alert("Failed to change status. Please try again.");
     }
   };
+  // Calculate showing range
+  const startItem = (pagination.currentPage - 1) * pagination.itemsPerPage + 1;
+  const endItem = Math.min(
+    pagination.currentPage * pagination.itemsPerPage,
+    pagination.totalItems
+  );
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -249,6 +304,7 @@ const AdminHomePage = () => {
                 <h1 className="text-2xl font-bold text-indigo-600">EventPro</h1>
               </div>
             </div>
+
             <div className="flex items-center">
               <div className="ml-4 flex items-center md:ml-6">
                 <button className="bg-white p-1 rounded-full text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 cursor-pointer">
@@ -273,12 +329,12 @@ const AdminHomePage = () => {
       <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
         <div className="mb-6 flex justify-between items-center">
           <h2 className="text-2xl font-bold text-gray-900">Admin Dashboard</h2>
-          <div className="flex space-x-3">
+          {/* <div className="flex space-x-3">
             <button className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 !rounded-button cursor-pointer whitespace-nowrap">
               <i className="fas fa-download mr-2"></i>
               Export Report
             </button>
-          </div>
+          </div> */}
         </div>
 
         {/* Service Stats */}
@@ -415,7 +471,9 @@ const AdminHomePage = () => {
                   id="category-filter"
                   className="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-10 pr-10 py-2 text-base border-gray-300 sm:text-sm rounded-md"
                   value={categoryFilter}
-                  onChange={(e) => setCategoryFilter(e.target.value)}
+                  onChange={(e) =>
+                    setCategoryFilter(e.target.value.toUpperCase())
+                  }
                 >
                   <option value="all">All Categories</option>
                   {categories.map((category, index) => (
@@ -426,7 +484,7 @@ const AdminHomePage = () => {
                 </select>
               </div>
             </div>
-            <div className="w-64">
+            {/* <div className="w-64">
               <label
                 htmlFor="search"
                 className="block text-sm font-medium text-gray-700"
@@ -466,56 +524,23 @@ const AdminHomePage = () => {
                   onChange={(e) => setDateFilter(e.target.value)}
                 />
               </div>
-            </div>
+            </div> */}
           </div>
         </div>
 
         {/* Services table */}
         <div className="bg-white shadow overflow-hidden sm:rounded-lg">
           <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th
-                  scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                >
-                  Service
-                </th>
-                <th
-                  scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                >
-                  Category
-                </th>
-                <th
-                  scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                >
-                  Price
-                </th>
-                <th
-                  scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                >
-                  Status
-                </th>
-                <th
-                  scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                >
-                  Submission Date
-                </th>
-                <th
-                  scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                >
-                  Actions
-                </th>
-              </tr>
-            </thead>
+            {/* ... table header ... */}
             <tbody className="bg-white divide-y divide-gray-200">
-              {currentServices.length > 0 ? (
-                currentServices.map((service) => (
+              {loading ? (
+                <tr>
+                  <td colSpan="6" className="px-6 py-4 text-center">
+                    Loading services...
+                  </td>
+                </tr>
+              ) : services.length > 0 ? (
+                services.map((service) => (
                   <tr key={service.id}>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
@@ -659,10 +684,7 @@ const AdminHomePage = () => {
                 ))
               ) : (
                 <tr>
-                  <td
-                    colSpan="6"
-                    className="px-6 py-4 text-center text-sm text-gray-500"
-                  >
+                  <td colSpan="6" className="px-6 py-4 text-center">
                     No services found matching your criteria
                   </td>
                 </tr>
@@ -673,116 +695,108 @@ const AdminHomePage = () => {
 
         {/* Pagination */}
         <div className="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6 mt-4 rounded-lg shadow">
-          <div className="flex-1 flex justify-between sm:hidden">
-            <button
-              onClick={() => paginate(Math.max(1, currentPage - 1))}
-              disabled={currentPage === 1}
-              className={`relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white ${
-                currentPage === 1
-                  ? "opacity-50 cursor-not-allowed"
-                  : "hover:bg-gray-50"
-              }`}
-            >
-              Previous
-            </button>
-            <button
-              onClick={() => paginate(Math.min(totalPages, currentPage + 1))}
-              disabled={currentPage === totalPages}
-              className={`ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white ${
-                currentPage === totalPages
-                  ? "opacity-50 cursor-not-allowed"
-                  : "hover:bg-gray-50"
-              }`}
-            >
-              Next
-            </button>
-          </div>
+          {/* ... mobile pagination ... */}
+
           <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
             <div>
               <p className="text-sm text-gray-700">
-                Showing{" "}
-                <span className="font-medium">{indexOfFirstService + 1}</span>{" "}
-                to{" "}
-                <span className="font-medium">
-                  {Math.min(indexOfLastService, filteredServices.length)}
-                </span>{" "}
-                of{" "}
-                <span className="font-medium">{filteredServices.length}</span>{" "}
+                Showing <span className="font-medium">{startItem}</span> to{" "}
+                <span className="font-medium">{endItem}</span> of{" "}
+                <span className="font-medium">{pagination.totalItems}</span>{" "}
                 results
               </p>
             </div>
             <div>
-              <nav
-                className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px"
-                aria-label="Pagination"
-              >
+              <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px">
+                {/* First Page Button */}
                 <button
-                  onClick={() => paginate(1)}
-                  disabled={currentPage === 1}
+                  onClick={() =>
+                    setPagination((prev) => ({ ...prev, currentPage: 1 }))
+                  }
+                  disabled={!pagination.hasPreviousPage}
                   className={`relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium ${
-                    currentPage === 1
+                    !pagination.hasPreviousPage
                       ? "text-gray-300 cursor-not-allowed"
                       : "text-gray-500 hover:bg-gray-50"
                   }`}
                 >
-                  <span className="sr-only">First</span>
                   <FaAngleDoubleLeft className="text-xs" />
                 </button>
 
+                {/* Previous Page Button */}
                 <button
-                  onClick={() => paginate(Math.max(1, currentPage - 1))}
-                  disabled={currentPage === 1}
+                  onClick={() =>
+                    setPagination((prev) => ({
+                      ...prev,
+                      currentPage: prev.currentPage - 1,
+                    }))
+                  }
+                  disabled={!pagination.hasPreviousPage}
                   className={`relative inline-flex items-center px-2 py-2 border border-gray-300 bg-white text-sm font-medium ${
-                    currentPage === 1
+                    !pagination.hasPreviousPage
                       ? "text-gray-300 cursor-not-allowed"
                       : "text-gray-500 hover:bg-gray-50"
                   }`}
                 >
-                  <span className="sr-only">Previous</span>
                   <FaChevronLeft className="text-xs" />
                 </button>
 
-                {Array.from({ length: totalPages }, (_, i) => i + 1).map(
-                  (number) => (
-                    <button
-                      key={number}
-                      onClick={() => paginate(number)}
-                      className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium ${
-                        currentPage === number
-                          ? "border-indigo-500 bg-indigo-50 text-indigo-600"
-                          : "border-gray-300 bg-white text-gray-700 hover:bg-gray-50"
-                      }`}
-                    >
-                      {number}
-                    </button>
-                  )
-                )}
+                {/* Page Numbers */}
+                {Array.from(
+                  { length: pagination.totalPages },
+                  (_, i) => i + 1
+                ).map((number) => (
+                  <button
+                    key={number}
+                    onClick={() =>
+                      setPagination((prev) => ({
+                        ...prev,
+                        currentPage: number,
+                      }))
+                    }
+                    className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium ${
+                      pagination.currentPage === number
+                        ? "border-indigo-500 bg-indigo-50 text-indigo-600"
+                        : "border-gray-300 bg-white text-gray-700 hover:bg-gray-50"
+                    }`}
+                  >
+                    {number}
+                  </button>
+                ))}
 
+                {/* Next Page Button */}
                 <button
                   onClick={() =>
-                    paginate(Math.min(totalPages, currentPage + 1))
+                    setPagination((prev) => ({
+                      ...prev,
+                      currentPage: prev.currentPage + 1,
+                    }))
                   }
-                  disabled={currentPage === totalPages}
+                  disabled={!pagination.hasNextPage}
                   className={`relative inline-flex items-center px-2 py-2 border border-gray-300 bg-white text-sm font-medium ${
-                    currentPage === totalPages
+                    !pagination.hasNextPage
                       ? "text-gray-300 cursor-not-allowed"
                       : "text-gray-500 hover:bg-gray-50"
                   }`}
                 >
-                  <span className="sr-only">Next</span>
                   <FaChevronRight className="text-xs" />
                 </button>
 
+                {/* Last Page Button */}
                 <button
-                  onClick={() => paginate(totalPages)}
-                  disabled={currentPage === totalPages}
+                  onClick={() =>
+                    setPagination((prev) => ({
+                      ...prev,
+                      currentPage: pagination.totalPages,
+                    }))
+                  }
+                  disabled={!pagination.hasNextPage}
                   className={`relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium ${
-                    currentPage === totalPages
+                    !pagination.hasNextPage
                       ? "text-gray-300 cursor-not-allowed"
                       : "text-gray-500 hover:bg-gray-50"
                   }`}
                 >
-                  <span className="sr-only">Last</span>
                   <FaAngleDoubleRight className="text-xs" />
                 </button>
               </nav>
