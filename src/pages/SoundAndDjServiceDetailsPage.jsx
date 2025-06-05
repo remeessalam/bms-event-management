@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { fetchServicesDetils } from "../Api/serviceApi"; // Adjust the import path as needed
+import ServiceBookModal from "../Components/ServiceBookModal";
 const SoundAndDjServiceDetailsPage = () => {
   const [activeTab, setActiveTab] = useState("overview");
   const [selectedDate, setSelectedDate] = useState("");
@@ -13,7 +14,8 @@ const SoundAndDjServiceDetailsPage = () => {
   const [vendorInfo, setVendorInfo] = useState(null);
   const [reviews, setReviews] = useState([]);
   const [relatedServices, setRelatedServices] = useState([]);
-
+  const [showBookingForm, setShowBookingForm] = useState(false);
+  const [selectedVenue, setSelectedVenue] = useState();
   const { id } = useParams();
   const navigate = useNavigate();
 
@@ -106,6 +108,15 @@ const SoundAndDjServiceDetailsPage = () => {
     setActiveTab(tab);
   };
 
+  const openBookingForm = (venueName) => {
+    setSelectedVenue(venueName);
+    setShowBookingForm(true);
+  };
+
+  const closeBookingForm = () => {
+    setShowBookingForm(false);
+    setSelectedVenue(null);
+  };
   const handleDateChange = (e) => {
     setSelectedDate(e.target.value);
   };
@@ -778,8 +789,8 @@ const SoundAndDjServiceDetailsPage = () => {
             <h2 className="text-xl font-semibold text-gray-900 mb-4">
               Book This Service
             </h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="md:col-span-2">
+            <div className="grid gap-6">
+              {/* <div className="md:col-span-2">
                 <div className="space-y-4">
                   <div>
                     <label
@@ -814,7 +825,7 @@ const SoundAndDjServiceDetailsPage = () => {
                     ></textarea>
                   </div>
                 </div>
-              </div>
+              </div> */}
 
               <div className="bg-gray-50 p-4 rounded-lg">
                 <h3 className="font-medium text-gray-900 mb-4">
@@ -836,7 +847,10 @@ const SoundAndDjServiceDetailsPage = () => {
                     </div>
                   </div>
                 </div>
-                <button className="mt-4 w-full bg-indigo-600 text-white py-3 px-4 rounded-md hover:bg-indigo-700 transition !rounded-button whitespace-nowrap cursor-pointer">
+                <button
+                  onClick={() => openBookingForm(service)}
+                  className="mt-4 w-full bg-indigo-600 text-white py-3 px-4 rounded-md hover:bg-indigo-700 transition !rounded-button whitespace-nowrap cursor-pointer"
+                >
                   Book Now
                 </button>
                 <p className="mt-2 text-xs text-gray-500 text-center">
@@ -909,7 +923,7 @@ const SoundAndDjServiceDetailsPage = () => {
           )}
 
           {/* Inquiry Form */}
-          <div className="mt-8 bg-white rounded-lg shadow-md p-6">
+          {/* <div className="mt-8 bg-white rounded-lg shadow-md p-6">
             <h2 className="text-xl font-semibold text-gray-900 mb-4">
               Send an Inquiry
             </h2>
@@ -1002,7 +1016,7 @@ const SoundAndDjServiceDetailsPage = () => {
                 </button>
               </div>
             </form>
-          </div>
+          </div> */}
         </div>
       </main>
 
@@ -1052,6 +1066,12 @@ const SoundAndDjServiceDetailsPage = () => {
             </div>
           </div>
         </div>
+      )}
+      {showBookingForm && (
+        <ServiceBookModal
+          closeBookingForm={closeBookingForm}
+          service={selectedVenue}
+        />
       )}
     </div>
   );

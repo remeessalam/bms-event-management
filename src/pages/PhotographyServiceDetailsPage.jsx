@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { fetchServicesDetils } from "../Api/serviceApi";
+import ServiceBookModal from "../Components/ServiceBookModal";
 
 const PhotographyServiceDetailsPage = () => {
   const [activeTab, setActiveTab] = useState("overview");
@@ -9,7 +10,8 @@ const PhotographyServiceDetailsPage = () => {
   const [showGalleryModal, setShowGalleryModal] = useState(false);
   const [selectedImage, setSelectedImage] = useState("");
   const [services, setServices] = useState(null); // Changed to null for initial state
-
+  const [showBookingForm, setShowBookingForm] = useState(false);
+  const [selectedVenue, setSelectedVenue] = useState();
   const { id } = useParams();
 
   useEffect(() => {
@@ -38,7 +40,15 @@ const PhotographyServiceDetailsPage = () => {
   const handleDateChange = (e) => {
     setSelectedDate(e.target.value);
   };
+  const openBookingForm = (venueName) => {
+    setSelectedVenue(venueName);
+    setShowBookingForm(true);
+  };
 
+  const closeBookingForm = () => {
+    setShowBookingForm(false);
+    setSelectedVenue(null);
+  };
   // Static package options (kept as is, but can be updated with API data if needed)
   const packageOptions = {
     basic: {
@@ -164,11 +174,14 @@ const PhotographyServiceDetailsPage = () => {
                   </div>
                 </div>
                 <div className="flex flex-wrap gap-4">
-                  <button className="bg-white text-indigo-700 px-6 py-3 rounded-md font-medium hover:bg-indigo-50 transition !rounded-button whitespace-nowrap cursor-pointer">
+                  {/* <button className="bg-white text-indigo-700 px-6 py-3 rounded-md font-medium hover:bg-indigo-50 transition !rounded-button whitespace-nowrap cursor-pointer">
                     <i className="fas fa-calendar-alt mr-2"></i>
                     Check Availability
-                  </button>
-                  <button className="bg-pink-500 text-white px-6 py-3 rounded-md font-medium hover:bg-pink-600 transition !rounded-button whitespace-nowrap cursor-pointer">
+                  </button> */}
+                  <button
+                    onClick={() => openBookingForm(services)}
+                    className="bg-pink-500 text-white px-6 py-3 rounded-md font-medium hover:bg-pink-600 transition !rounded-button whitespace-nowrap cursor-pointer"
+                  >
                     <i className="fas fa-heart mr-2"></i>
                     Book Now
                   </button>
@@ -490,6 +503,13 @@ const PhotographyServiceDetailsPage = () => {
           {/* Existing related services section */}
         </div>
       </main>
+      {/* Booking Inquiry Form */}
+      {showBookingForm && (
+        <ServiceBookModal
+          closeBookingForm={closeBookingForm}
+          service={selectedVenue}
+        />
+      )}
     </div>
   );
 };

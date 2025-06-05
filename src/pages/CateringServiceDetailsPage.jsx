@@ -3,12 +3,15 @@
 import React, { useEffect, useState } from "react";
 import { fetchServicesDetils } from "../Api/serviceApi";
 import { useParams } from "react-router-dom";
+import ServiceBookModal from "../Components/ServiceBookModal";
 
 const CateringServiceDetailsPage = () => {
   const [activeTab, setActiveTab] = useState("description");
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isFullScreen, setIsFullScreen] = useState(false);
   const [selectedDate, setSelectedDate] = useState(null);
+  const [selectedVenue, setSelectedVenue] = useState();
+  const [showBookingForm, setShowBookingForm] = useState(false);
   const [service, setServices] = useState(null); // Changed to null for initial state
   const { id } = useParams();
 
@@ -138,6 +141,15 @@ const CateringServiceDetailsPage = () => {
 
   console.log("Service details:", service);
 
+  const openBookingForm = (venueName) => {
+    setSelectedVenue(venueName);
+    setShowBookingForm(true);
+  };
+
+  const closeBookingForm = () => {
+    setShowBookingForm(false);
+    setSelectedVenue(null);
+  };
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Main Content */}
@@ -877,7 +889,7 @@ const CateringServiceDetailsPage = () => {
                   Book This Service
                 </h2>
 
-                <div className="space-y-4 mb-6">
+                {/* <div className="space-y-4 mb-6">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       Event Date
@@ -929,17 +941,20 @@ const CateringServiceDetailsPage = () => {
                       </div>
                     </div>
                   </div>
-                </div>
+                </div> */}
 
-                <button className="w-full bg-indigo-600 text-white py-3 px-4 rounded-md hover:bg-indigo-700 transition font-medium !rounded-button whitespace-nowrap cursor-pointer">
+                <button
+                  onClick={() => openBookingForm(service)}
+                  className="w-full bg-indigo-600 text-white py-3 px-4 rounded-md hover:bg-indigo-700 transition font-medium !rounded-button whitespace-nowrap cursor-pointer"
+                >
                   Book Now
                 </button>
 
-                <div className="mt-4 text-center">
+                {/* <div className="mt-4 text-center">
                   <button className="text-indigo-600 hover:text-indigo-800 text-sm font-medium !rounded-button whitespace-nowrap cursor-pointer">
                     Request Custom Quote
                   </button>
-                </div>
+                </div> */}
 
                 <div className="mt-6 pt-6 border-t border-gray-200">
                   <h3 className="text-lg font-medium text-gray-900 mb-3">
@@ -1047,7 +1062,7 @@ const CateringServiceDetailsPage = () => {
         </div>
 
         {/* Sticky Book Button (Mobile) */}
-        <div className="fixed bottom-0 left-0 right-0 bg-white shadow-lg border-t border-gray-200 p-4 lg:hidden">
+        {/* <div className="fixed bottom-0 left-0 right-0 bg-white shadow-lg border-t border-gray-200 p-4 lg:hidden">
           <div className="flex justify-between items-center">
             <div>
               <p className="text-xl font-bold text-indigo-600">
@@ -1055,12 +1070,21 @@ const CateringServiceDetailsPage = () => {
               </p>
               <p className="text-sm text-gray-500">per event</p>
             </div>
-            <button className="bg-indigo-600 text-white py-2 px-6 rounded-md hover:bg-indigo-700 transition font-medium !rounded-button whitespace-nowrap cursor-pointer">
+            <button
+              // onClick={() => openBookingForm(service)}
+              className="bg-indigo-600 text-white py-2 px-6 rounded-md hover:bg-indigo-700 transition font-medium !rounded-button whitespace-nowrap cursor-pointer"
+            >
               Book Now
             </button>
           </div>
-        </div>
+        </div> */}
       </main>
+      {showBookingForm && (
+        <ServiceBookModal
+          closeBookingForm={closeBookingForm}
+          service={selectedVenue}
+        />
+      )}
     </div>
   );
 };

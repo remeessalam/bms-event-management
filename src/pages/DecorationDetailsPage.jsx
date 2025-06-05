@@ -1,13 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { fetchServicesDetils } from "../Api/serviceApi";
+import ServiceBookModal from "../Components/ServiceBookModal";
 
 const DecorationDetailsPage = () => {
   const [activeTab, setActiveTab] = useState("overview");
   const [showQuoteForm, setShowQuoteForm] = useState(false);
   const [currentTestimonialIndex, setCurrentTestimonialIndex] = useState(0);
   const [service, setService] = useState(null);
-
+  const [showBookingForm, setShowBookingForm] = useState(false);
+  const [selectedVenue, setSelectedVenue] = useState();
   const { id } = useParams();
 
   useEffect(() => {
@@ -100,7 +102,15 @@ const DecorationDetailsPage = () => {
       minimumFractionDigits: 2,
     }).format(amount);
   };
+  const openBookingForm = (venueName) => {
+    setSelectedVenue(venueName);
+    setShowBookingForm(true);
+  };
 
+  const closeBookingForm = () => {
+    setShowBookingForm(false);
+    setSelectedVenue(null);
+  };
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Main Content */}
@@ -157,12 +167,12 @@ const DecorationDetailsPage = () => {
                       {formatCurrency(service.price)}
                     </span>
                   </div>
-                  <button
+                  {/* <button
                     onClick={() => setShowQuoteForm(true)}
                     className="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-md font-medium transition !rounded-button whitespace-nowrap cursor-pointer"
                   >
                     Request Quote
-                  </button>
+                  </button> */}
                 </div>
               </div>
             </div>
@@ -292,10 +302,10 @@ const DecorationDetailsPage = () => {
 
                     <div className="mt-8">
                       <button
-                        onClick={() => setShowQuoteForm(true)}
+                        onClick={() => openBookingForm(service)}
                         className="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 transition !rounded-button whitespace-nowrap cursor-pointer"
                       >
-                        Request Quote
+                        Book Now
                       </button>
                     </div>
                   </div>
@@ -540,9 +550,14 @@ const DecorationDetailsPage = () => {
           <i className="fas fa-comment-dollar text-2xl"></i>
         </button>
       </div>
-
+      {showBookingForm && (
+        <ServiceBookModal
+          closeBookingForm={closeBookingForm}
+          service={selectedVenue}
+        />
+      )}
       {/* Quote Request Form Modal */}
-      {showQuoteForm && (
+      {/* {showQuoteForm && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg shadow-xl max-w-md w-full mx-4 overflow-hidden">
             <div className="bg-indigo-600 px-6 py-4 flex justify-between items-center">
@@ -673,7 +688,7 @@ const DecorationDetailsPage = () => {
             </div>
           </div>
         </div>
-      )}
+      )} */}
     </div>
   );
 };

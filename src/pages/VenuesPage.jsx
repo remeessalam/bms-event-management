@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { fetchServices } from "../Api/serviceApi";
+import ServiceBookModal from "../Components/ServiceBookModal";
 
 const VenuesPage = () => {
   const [selectedVenueType, setSelectedVenueType] = useState("All Types");
@@ -345,10 +346,10 @@ const VenuesPage = () => {
 
                     <div className="flex space-x-3">
                       <button
-                        onClick={() => openBookingForm(venue.title)}
+                        onClick={() => openBookingForm(venue)}
                         className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white py-2 rounded-md transition !rounded-button whitespace-nowrap cursor-pointer"
                       >
-                        <i className="fas fa-clipboard-check mr-2"></i>
+                        {/* <i className="fas fa-clipboard-check mr-2"></i> */}
                         Book Now
                       </button>
                       {/* <button
@@ -623,187 +624,10 @@ const VenuesPage = () => {
 
       {/* Booking Inquiry Form */}
       {showBookingForm && (
-        <div className="fixed inset-0 z-50 overflow-y-auto">
-          <div className="flex items-center justify-center min-h-screen px-4">
-            <div
-              className="fixed inset-0 bg-black opacity-50"
-              onClick={closeBookingForm}
-            ></div>
-            <div className="relative bg-white rounded-lg shadow-xl max-w-md w-full p-6 z-10">
-              <div className="flex justify-between items-center mb-6">
-                <h3 className="text-xl font-bold text-gray-900">
-                  Book {selectedVenue}
-                </h3>
-                <button
-                  onClick={closeBookingForm}
-                  className="text-gray-400 hover:text-gray-500 !rounded-button whitespace-nowrap cursor-pointer"
-                >
-                  <i className="fas fa-times text-xl"></i>
-                </button>
-              </div>
-
-              <div className="space-y-6">
-                <div>
-                  <label
-                    htmlFor="event-date"
-                    className="block text-sm font-medium text-gray-700 mb-1"
-                  >
-                    Event Date
-                  </label>
-                  <div className="relative">
-                    <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                      <i className="fas fa-calendar-alt text-gray-400"></i>
-                    </div>
-                    <input
-                      type="date"
-                      id="event-date"
-                      className="pl-10 w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label
-                      htmlFor="start-time"
-                      className="block text-sm font-medium text-gray-700 mb-1"
-                    >
-                      Start Time
-                    </label>
-                    <div className="relative">
-                      <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                        <i className="fas fa-clock text-gray-400"></i>
-                      </div>
-                      <input
-                        type="time"
-                        id="start-time"
-                        className="pl-10 w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-                      />
-                    </div>
-                  </div>
-                  <div>
-                    <label
-                      htmlFor="end-time"
-                      className="block text-sm font-medium text-gray-700 mb-1"
-                    >
-                      End Time
-                    </label>
-                    <div className="relative">
-                      <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                        <i className="fas fa-clock text-gray-400"></i>
-                      </div>
-                      <input
-                        type="time"
-                        id="end-time"
-                        className="pl-10 w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                <div>
-                  <label
-                    htmlFor="guests"
-                    className="block text-sm font-medium text-gray-700 mb-1"
-                  >
-                    Number of Guests
-                  </label>
-                  <input
-                    type="number"
-                    id="guests"
-                    min="1"
-                    className="w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-                  />
-                </div>
-
-                <div>
-                  <label
-                    htmlFor="event-type"
-                    className="block text-sm font-medium text-gray-700 mb-1"
-                  >
-                    Event Type
-                  </label>
-                  <select
-                    id="event-type"
-                    className="w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-                  >
-                    <option value="">Select event type</option>
-                    <option value="wedding">Wedding</option>
-                    <option value="corporate">Corporate Event</option>
-                    <option value="birthday">Birthday Party</option>
-                    <option value="conference">Conference</option>
-                    <option value="social">Social Gathering</option>
-                    <option value="other">Other</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label
-                    htmlFor="requirements"
-                    className="block text-sm font-medium text-gray-700 mb-1"
-                  >
-                    Special Requirements
-                  </label>
-                  <textarea
-                    id="requirements"
-                    rows={3}
-                    className="w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-                    placeholder="Tell us about any specific requirements or questions"
-                  ></textarea>
-                </div>
-
-                <div>
-                  <label
-                    htmlFor="name"
-                    className="block text-sm font-medium text-gray-700 mb-1"
-                  >
-                    Your Name
-                  </label>
-                  <input
-                    type="text"
-                    id="name"
-                    className="w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-                  />
-                </div>
-
-                <div>
-                  <label
-                    htmlFor="email"
-                    className="block text-sm font-medium text-gray-700 mb-1"
-                  >
-                    Email Address
-                  </label>
-                  <input
-                    type="email"
-                    id="email"
-                    className="w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-                  />
-                </div>
-
-                <div>
-                  <label
-                    htmlFor="phone"
-                    className="block text-sm font-medium text-gray-700 mb-1"
-                  >
-                    Phone Number
-                  </label>
-                  <input
-                    type="tel"
-                    id="phone"
-                    className="w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-                  />
-                </div>
-
-                <button
-                  type="submit"
-                  className="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 transition !rounded-button whitespace-nowrap cursor-pointer"
-                >
-                  Submit Inquiry
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
+        <ServiceBookModal
+          closeBookingForm={closeBookingForm}
+          service={selectedVenue}
+        />
       )}
 
       {/* Calendar Modal */}

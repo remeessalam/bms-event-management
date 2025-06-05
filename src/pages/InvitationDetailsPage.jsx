@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 import { fetchServicesDetils } from "../Api/serviceApi";
 import { FiArrowUp } from "react-icons/fi";
+import ServiceBookModal from "../Components/ServiceBookModal";
 
 const InvitationDetailsPage = () => {
   const [activeTab, setActiveTab] = useState("description");
@@ -10,7 +11,8 @@ const InvitationDetailsPage = () => {
   const [showReviewForm, setShowReviewForm] = useState(false);
   const [expandedFaq, setExpandedFaq] = useState(null);
   const [services, setServices] = useState(null);
-
+  const [showBookingForm, setShowBookingForm] = useState(false);
+  const [selectedVenue, setSelectedVenue] = useState();
   const { id } = useParams();
 
   useEffect(() => {
@@ -76,7 +78,15 @@ const InvitationDetailsPage = () => {
         "Yes! We offer sample packs for $25 which includes paper swatches, printing technique examples, and a sample invitation suite. This amount is credited toward your final order when you purchase.",
     },
   ];
+  const openBookingForm = (venueName) => {
+    setSelectedVenue(venueName);
+    setShowBookingForm(true);
+  };
 
+  const closeBookingForm = () => {
+    setShowBookingForm(false);
+    setSelectedVenue(null);
+  };
   return (
     <div className="min-h-screen bg-gray-50">
       <main>
@@ -310,14 +320,16 @@ const InvitationDetailsPage = () => {
               </div> */}
 
               <div className="mt-8 space-y-3">
-                <button className="w-full bg-indigo-600 text-white py-3 px-6 rounded-md hover:bg-indigo-700 transition flex items-center justify-center font-medium !rounded-button whitespace-nowrap cursor-pointer">
-                  <i className="fas fa-shopping-cart mr-2"></i>
+                <button
+                  onClick={() => openBookingForm(services)}
+                  className="w-full bg-indigo-600 text-white py-3 px-6 rounded-md hover:bg-indigo-700 transition flex items-center justify-center font-medium !rounded-button whitespace-nowrap cursor-pointer"
+                >
                   Book This Service
                 </button>
-                <button className="w-full bg-white text-indigo-600 py-3 px-6 rounded-md border border-indigo-600 hover:bg-indigo-50 transition flex items-center justify-center font-medium !rounded-button whitespace-nowrap cursor-pointer">
+                {/* <button className="w-full bg-white text-indigo-600 py-3 px-6 rounded-md border border-indigo-600 hover:bg-indigo-50 transition flex items-center justify-center font-medium !rounded-button whitespace-nowrap cursor-pointer">
                   <i className="fas fa-envelope mr-2"></i>
                   Request Custom Quote
-                </button>
+                </button> */}
               </div>
             </div>
           </div>
@@ -882,7 +894,7 @@ const InvitationDetailsPage = () => {
           </div>
         </div>
 
-        <div className="bg-indigo-700 text-white">
+        {/* <div className="bg-indigo-700 text-white">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
             <div className="md:flex md:items-center md:justify-between">
               <div className="md:w-2/3">
@@ -905,7 +917,7 @@ const InvitationDetailsPage = () => {
               </div>
             </div>
           </div>
-        </div>
+        </div> */}
       </main>
 
       <div className="fixed bottom-8 right-8">
@@ -916,6 +928,13 @@ const InvitationDetailsPage = () => {
           <FiArrowUp />
         </button>
       </div>
+      {/* Booking Inquiry Form */}
+      {showBookingForm && (
+        <ServiceBookModal
+          closeBookingForm={closeBookingForm}
+          service={selectedVenue}
+        />
+      )}
     </div>
   );
 };
