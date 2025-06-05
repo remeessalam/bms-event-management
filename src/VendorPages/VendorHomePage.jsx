@@ -88,7 +88,7 @@ const VendorHomePage = () => {
   ];
 
   useEffect(() => {
-    const token = localStorage.getItem("jwtToken");
+    const token = localStorage.getItem("vendorjwtToken");
     if (!token) {
       window.location.href = "/login";
     }

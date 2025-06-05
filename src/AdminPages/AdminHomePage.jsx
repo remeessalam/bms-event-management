@@ -50,7 +50,7 @@ const AdminHomePage = () => {
   const [rejectionReason, setRejectionReason] = useState("");
 
   useEffect(() => {
-    const token = localStorage.getItem("jwtToken");
+    const token = localStorage.getItem("adminjwtToken");
     if (!token) {
       window.location.href = "/login";
     }

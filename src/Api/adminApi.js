@@ -5,7 +5,7 @@ const BASE_URL = "http://localhost:5050/api";
 
 export const getAdminServices = async (params) => {
   try {
-    const token = localStorage.getItem("jwtToken");
+    const token = localStorage.getItem("adminjwtToken");
     console.log("Fetching services with params:", params);
     const response = await axios.get(`${BASE_URL}/admin/services`, {
       params,
@@ -27,7 +27,7 @@ export const getAdminServices = async (params) => {
 
 export const updateServiceStatus = async (serviceId, newStatus) => {
   try {
-    const token = localStorage.getItem("jwtToken");
+    const token = localStorage.getItem("adminjwtToken");
     const response = await axios.patch(
       `${BASE_URL}/admin/services/${serviceId}/status`,
       {

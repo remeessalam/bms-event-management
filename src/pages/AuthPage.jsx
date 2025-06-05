@@ -45,7 +45,13 @@ const AuthPage = ({ type }) => {
 
         if (res.success) {
           const { token, user, dashboardUrl } = res.data;
-          localStorage.setItem("jwtToken", token);
+          if (dashboardUrl === "/admin") {
+            localStorage.setItem("adminjwtToken", token);
+          } else if (dashboardUrl === "/vendor") {
+            localStorage.setItem("vendorjwtToken", token);
+          } else {
+            localStorage.setItem("jwtToken", token);
+          }
           toast.success("Login successful!");
           navigate(dashboardUrl || "/");
         }

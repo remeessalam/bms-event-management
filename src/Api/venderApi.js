@@ -4,7 +4,7 @@ const BASE_URL = "http://localhost:5050/api";
 
 export const getVendorServices = async (page = 1, limit = 10) => {
   try {
-    const token = localStorage.getItem("jwtToken");
+    const token = localStorage.getItem("vendorjwtToken");
     const response = await axios.get(`${BASE_URL}/vendor/services`, {
       params: {
         page,
@@ -38,7 +38,7 @@ export const getVendorServices = async (page = 1, limit = 10) => {
 
 export const addVendorService = async (serviceData) => {
   try {
-    const token = localStorage.getItem("jwtToken");
+    const token = localStorage.getItem("vendorjwtToken");
     const response = await axios.post(
       `${BASE_URL}/vendor/submit-service`,
       serviceData,
@@ -60,7 +60,7 @@ export const addVendorService = async (serviceData) => {
 
 export const deleteVendorService = async (serviceId) => {
   try {
-    const token = localStorage.getItem("jwtToken");
+    const token = localStorage.getItem("vendorjwtToken");
     const response = await axios.delete(
       `${BASE_URL}/vendor/services/${serviceId}`,
       {
