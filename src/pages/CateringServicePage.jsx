@@ -25,7 +25,7 @@ const CateringServicePage = () => {
     fetchServiceData();
   }, []);
 
-  const filters = ["All", "Price: Low to High", "Price: High to Low"];
+  const filters = ["Price: Low to High", "Price: High to Low"];
 
   const filteredServices = services.filter((service) =>
     service.title.toLowerCase().includes(searchQuery.toLowerCase())

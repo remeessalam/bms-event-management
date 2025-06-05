@@ -23,7 +23,9 @@ const Header = () => {
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <div className="flex-shrink-0 flex items-center">
-            <h1 className="text-2xl font-bold text-indigo-600">EventPro</h1>
+            <Link to={"/"} className="text-2xl font-bold text-indigo-600">
+              EventPro
+            </Link>
           </div>
           {/* Right side navigation */}
           <div className="flex items-center space-x-4">

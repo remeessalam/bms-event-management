@@ -1,296 +1,81 @@
 // The exported code uses Tailwind CSS. Install Tailwind CSS in your dev environment to ensure all styles work.
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { fetchServicesDetils } from "../Api/serviceApi";
+import { useParams } from "react-router-dom";
 
 const CateringServiceDetailsPage = () => {
   const [activeTab, setActiveTab] = useState("description");
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isFullScreen, setIsFullScreen] = useState(false);
   const [selectedDate, setSelectedDate] = useState(null);
+  const [service, setServices] = useState(null); // Changed to null for initial state
+  const { id } = useParams();
+
+  useEffect(() => {
+    const fetchServiceData = async () => {
+      try {
+        const servicesData = await fetchServicesDetils(id);
+        setServices(servicesData || null); // Set the data property from API response
+      } catch (error) {
+        console.error("Error fetching services:", error);
+        setServices(null);
+      }
+    };
+
+    fetchServiceData();
+  }, [id]);
 
   // Service details
-  const service = {
-    id: 1,
-    name: "Premium Wedding Buffet",
-    price: "$25-35 per person",
-    priceRange: { min: 25, max: 35 },
-    rating: 4.8,
-    reviewCount: 124,
-    available: true,
-    capacity: "50-300 guests",
-    duration: "4-6 hours",
-    description:
-      "Our Premium Wedding Buffet service offers an elegant dining experience for your special day. We provide a sophisticated selection of gourmet dishes prepared by our award-winning chefs, beautifully presented to impress your guests. The service includes setup, serving staff, cleanup, and premium dinnerware.",
-    features: [
-      "Professional serving staff in formal attire",
-      "Custom menu planning with our executive chef",
-      "Elegant food presentation with decorative elements",
-      "Premium quality ingredients sourced locally when possible",
-      "Special dietary accommodations available",
-      "Complete setup and cleanup service",
-    ],
-    included: [
-      "Fine china, silverware, and glassware",
-      "Linen napkins and tablecloths",
-      "Chafing dishes and serving equipment",
-      "Buffet table décor and signage",
-      "Water and coffee service",
-    ],
-    setup:
-      "Our team arrives 2-3 hours before the event to ensure proper setup and food preparation. We require access to a kitchen or prep area with electricity and water. For outdoor venues, we can provide portable equipment at an additional cost.",
-    cancellation:
-      "Free cancellation up to 30 days before your event. Cancellations within 30 days will forfeit the deposit. Rescheduling is available at no additional cost with at least 14 days notice.",
-    images: [
-      "https://readdy.ai/api/search-image?query=elegant%2520wedding%2520buffet%2520with%2520beautifully%2520arranged%2520food%2520on%2520white%2520tables%2520with%2520floral%2520decorations%252C%2520professional%2520catering%2520setup%2520with%2520high-end%2520silverware%2520and%2520serving%2520stations%252C%2520soft%2520lighting%2520and%2520minimal%2520elegant%2520background&width=800&height=500&seq=201&orientation=landscape",
-      "https://readdy.ai/api/search-image?query=luxury%2520wedding%2520catering%2520with%2520servers%2520in%2520formal%2520attire%2520presenting%2520gourmet%2520food%2520on%2520elegant%2520trays%252C%2520professional%2520service%2520at%2520upscale%2520venue%2520with%2520soft%2520lighting%2520and%2520minimal%2520elegant%2520background&width=800&height=500&seq=202&orientation=landscape",
-      "https://readdy.ai/api/search-image?query=gourmet%2520wedding%2520food%2520closeup%2520with%2520beautifully%2520plated%2520appetizers%2520and%2520entrees%252C%2520professional%2520catering%2520presentation%2520with%2520garnishes%2520and%2520sauces%252C%2520elegant%2520serving%2520dishes%2520with%2520soft%2520lighting%2520and%2520minimal%2520background&width=800&height=500&seq=203&orientation=landscape",
-      "https://readdy.ai/api/search-image?query=wedding%2520dessert%2520station%2520with%2520tiered%2520displays%2520of%2520elegant%2520pastries%2520and%2520cakes%252C%2520professional%2520catering%2520setup%2520with%2520decorative%2520elements%252C%2520luxury%2520presentation%2520with%2520soft%2520lighting%2520and%2520minimal%2520elegant%2520background&width=800&height=500&seq=204&orientation=landscape",
-      "https://readdy.ai/api/search-image?query=wedding%2520reception%2520dining%2520tables%2520with%2520elegant%2520place%2520settings%2520and%2520centerpieces%252C%2520professional%2520catering%2520setup%2520with%2520fine%2520china%2520and%2520silverware%252C%2520luxury%2520event%2520space%2520with%2520soft%2520lighting%2520and%2520minimal%2520elegant%2520background&width=800&height=500&seq=205&orientation=landscape",
-    ],
-    menuOptions: [
-      {
-        category: "Appetizers",
-        items: [
-          {
-            name: "Prosciutto-Wrapped Asparagus",
-            dietary: ["gluten-free"],
-            description:
-              "Fresh asparagus spears wrapped in imported prosciutto",
-          },
-          {
-            name: "Caprese Skewers",
-            dietary: ["vegetarian", "gluten-free"],
-            description:
-              "Cherry tomatoes, fresh mozzarella, and basil with balsamic glaze",
-          },
-          {
-            name: "Smoked Salmon Canapés",
-            dietary: [],
-            description:
-              "House-smoked salmon on cucumber rounds with dill cream cheese",
-          },
-          {
-            name: "Wild Mushroom Tartlets",
-            dietary: ["vegetarian"],
-            description:
-              "Seasonal wild mushrooms in a flaky pastry shell with herbs and goat cheese",
-          },
-          {
-            name: "Vegan Spring Rolls",
-            dietary: ["vegan", "gluten-free"],
-            description:
-              "Fresh vegetables in rice paper with sweet chili dipping sauce",
-          },
-        ],
-      },
-      {
-        category: "Main Courses",
-        items: [
-          {
-            name: "Herb-Crusted Prime Rib",
-            dietary: ["gluten-free"],
-            description:
-              "Slow-roasted prime rib with rosemary and thyme crust, served with au jus",
-          },
-          {
-            name: "Grilled Salmon",
-            dietary: ["gluten-free"],
-            description: "Atlantic salmon with lemon-dill sauce and capers",
-          },
-          {
-            name: "Chicken Marsala",
-            dietary: [],
-            description:
-              "Pan-seared chicken breast with mushroom marsala wine sauce",
-          },
-          {
-            name: "Vegetable Wellington",
-            dietary: ["vegetarian", "vegan"],
-            description:
-              "Roasted vegetables and mushroom duxelles wrapped in puff pastry",
-          },
-          {
-            name: "Braised Short Ribs",
-            dietary: ["gluten-free"],
-            description: "Slow-cooked beef short ribs with red wine reduction",
-          },
-        ],
-      },
-      {
-        category: "Side Dishes",
-        items: [
-          {
-            name: "Garlic Mashed Potatoes",
-            dietary: ["vegetarian", "gluten-free"],
-            description: "Creamy Yukon gold potatoes with roasted garlic",
-          },
-          {
-            name: "Grilled Seasonal Vegetables",
-            dietary: ["vegetarian", "vegan", "gluten-free"],
-            description: "Locally sourced vegetables with olive oil and herbs",
-          },
-          {
-            name: "Wild Rice Pilaf",
-            dietary: ["vegetarian", "vegan", "gluten-free"],
-            description: "Wild and brown rice blend with mushrooms and herbs",
-          },
-          {
-            name: "Roasted Root Vegetables",
-            dietary: ["vegetarian", "vegan", "gluten-free"],
-            description: "Seasonal root vegetables with rosemary and thyme",
-          },
-          {
-            name: "Asparagus with Hollandaise",
-            dietary: ["vegetarian", "gluten-free"],
-            description: "Steamed asparagus with classic hollandaise sauce",
-          },
-        ],
-      },
-      {
-        category: "Desserts",
-        items: [
-          {
-            name: "Mini Dessert Trio",
-            dietary: ["vegetarian"],
-            description:
-              "Assortment of chocolate mousse, lemon tart, and berry cheesecake",
-          },
-          {
-            name: "Fresh Fruit Display",
-            dietary: ["vegetarian", "vegan", "gluten-free"],
-            description:
-              "Seasonal fruits artfully arranged with honey yogurt dip",
-          },
-          {
-            name: "Chocolate Fountain",
-            dietary: ["vegetarian"],
-            description: "Premium chocolate with assorted dipping items",
-          },
-          {
-            name: "Wedding Cake Service",
-            dietary: [],
-            description:
-              "Professional cutting and serving of your wedding cake",
-          },
-          {
-            name: "Vegan Dessert Options",
-            dietary: ["vegetarian", "vegan"],
-            description:
-              "Selection of plant-based desserts available upon request",
-          },
-        ],
-      },
-    ],
-    packages: [
-      {
-        name: "Silver Package",
-        price: "$25 per person",
-        includes: [
-          "Choice of 3 appetizers",
-          "2 main courses",
-          "2 side dishes",
-          "1 dessert option",
-          "Coffee and tea service",
-          "Standard serving staff (1 per 25 guests)",
-          "Basic setup and cleanup",
-        ],
-      },
-      {
-        name: "Gold Package",
-        price: "$30 per person",
-        includes: [
-          "Choice of 4 appetizers",
-          "3 main courses",
-          "3 side dishes",
-          "2 dessert options",
-          "Coffee, tea, and soft drinks",
-          "Enhanced serving staff (1 per 20 guests)",
-          "Complete setup and cleanup",
-          "Premium tableware and linens",
-        ],
-      },
-      {
-        name: "Platinum Package",
-        price: "$35 per person",
-        includes: [
-          "Choice of 5 appetizers",
-          "4 main courses",
-          "4 side dishes",
-          "Full dessert station",
-          "Coffee, tea, soft drinks, and signature mocktail",
-          "Premium serving staff (1 per 15 guests)",
-          "Complete setup and cleanup",
-          "Luxury tableware and linens",
-          "Custom menu consultation",
-          "Food tasting session prior to event",
-        ],
-      },
-    ],
-    addOns: [
-      { name: "Champagne Toast", price: "$5 per person" },
-      { name: "Chocolate Fountain", price: "$350" },
-      { name: "Carving Station with Chef", price: "$450" },
-      { name: "Late Night Snack Station", price: "$8 per person" },
-      { name: "Custom Ice Sculpture", price: "$500+" },
-    ],
-    payment:
-      "A 25% deposit is required to secure your date. The remaining balance is due 14 days before your event. We accept all major credit cards, checks, and bank transfers.",
-    reviews: [
-      {
-        name: "Jennifer & Michael",
-        date: "April 15, 2025",
-        rating: 5,
-        comment:
-          "The Premium Wedding Buffet service exceeded our expectations! The food was absolutely delicious and beautifully presented. Our guests are still raving about it. The staff was professional and attentive throughout the entire event.",
-        criteria: { food: 5, service: 5, value: 4.5, presentation: 5 },
-      },
-      {
-        name: "Sarah & David",
-        date: "March 2, 2025",
-        rating: 4.5,
-        comment:
-          "We were very pleased with our wedding catering. The food was excellent and the staff was accommodating with our last-minute changes. The only small issue was that they ran out of one appetizer early in the evening.",
-        criteria: { food: 5, service: 4, value: 4.5, presentation: 5 },
-      },
-      {
-        name: "Rebecca & Thomas",
-        date: "February 10, 2025",
-        rating: 5,
-        comment:
-          "Absolutely perfect! From the tasting to the big day, everything was handled with professionalism and care. The presentation was stunning and the food was delicious. Worth every penny!",
-        criteria: { food: 5, service: 5, value: 5, presentation: 5 },
-      },
-      {
-        name: "Amanda & Christopher",
-        date: "January 22, 2025",
-        rating: 4,
-        comment:
-          "Good food and service overall. We chose the Silver package and were happy with the value. The staff was friendly and efficient. Would recommend for couples on a budget who still want quality catering.",
-        criteria: { food: 4, service: 4, value: 5, presentation: 3.5 },
-      },
-    ],
-    availability: {
-      availableDates: [
-        "2025-05-10",
-        "2025-05-11",
-        "2025-05-17",
-        "2025-05-18",
-        "2025-05-24",
-        "2025-05-25",
-        "2025-05-31",
-        "2025-06-01",
-        "2025-06-07",
-        "2025-06-08",
-        "2025-06-14",
-        "2025-06-15",
-        "2025-06-21",
-        "2025-06-22",
-        "2025-06-28",
-        "2025-06-29",
-      ],
-      timeSlots: ["10:00 AM", "12:00 PM", "2:00 PM", "4:00 PM", "6:00 PM"],
-    },
-  };
+  // const service = {
+  //   id: "683fd48c4379a7bf57f84b91",
+  //   title: "CATRING Service 10 - 22nc7j",
+  //   description:
+  //     "This is a sample catring service description. It includes Feature 1.",
+  //   category: "CATRING",
+  //   price: 650.43,
+  //   currency: "INR",
+  //   features: ["Feature 1"],
+  //   images: [
+  //     "https://res.cloudinary.com/dzcfl3qpw/image/upload/v1749013643/event_services/z2ugmjsgirmttuqv8vvi.jpg",
+  //     "https://res.cloudinary.com/dzcfl3qpw/image/upload/v1749013644/event_services/nmgzrmwzvfuihkx9p8wx.jpg",
+  //     "https://res.cloudinary.com/dzcfl3qpw/image/upload/v1749013646/event_services/r2r2z087emlibvbqwriy.jpg",
+  //   ],
+  //   isDeleted: false,
+  //   pricingModel: "PER_EVENT",
+  //   status: "approved",
+  //   statusReason: null,
+  //   statusUpdatedAt: "2025-06-04T09:07:17.748Z",
+  //   terms: "Sample terms and conditions for this service.",
+  //   createdAt: "2025-06-04T05:07:24.165Z",
+  //   updatedAt: "2025-06-04T09:07:17.748Z",
+  //   vendorId: "68368f94acb519fde26427f3",
+  //   vendorEmail: null,
+  //   vendorName: null,
+  //   rating: 0, // Default or placeholder
+  //   reviewCount: 0, // Default or placeholder
+  //   available: true, // Default or placeholder
+  //   capacity: "N/A", // Default or placeholder
+  //   duration: "N/A", // Default or placeholder
+  //   included: [], // Default or placeholder
+  //   setup: "N/A", // Default or placeholder
+  //   cancellation: "N/A", // Default or placeholder
+  //   menuOptions: [], // Default or placeholder
+  //   packages: [
+  //     {
+  //       name: "Standard Package",
+  //       price: "₹650.43 per event",
+  //       includes: ["Basic catering service", "Setup and cleanup"],
+  //     },
+  //   ],
+  //   addOns: [], // Default or placeholder
+  //   payment: "N/A", // Default or placeholder
+  //   reviews: [], // Default or placeholder
+  //   availability: {
+  //     availableDates: [], // Default or placeholder
+  //     timeSlots: [], // Default or placeholder
+  //   },
+  // };
 
   // Generate calendar days
   const generateCalendarDays = () => {
@@ -316,7 +101,7 @@ const CateringServiceDetailsPage = () => {
       days.push({
         day: i,
         date,
-        available: service.availability.availableDates.includes(date),
+        available: service?.availability?.availableDates.includes(date),
       });
     }
 
@@ -343,6 +128,16 @@ const CateringServiceDetailsPage = () => {
     setSelectedDate(date);
   };
 
+  if (!service) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        Loading...
+      </div>
+    );
+  }
+
+  console.log("Service details:", service);
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Main Content */}
@@ -360,7 +155,7 @@ const CateringServiceDetailsPage = () => {
                   <i className="fas fa-arrow-left text-lg"></i>
                 </a>
                 <h1 className="text-xl font-bold text-gray-900">
-                  {service.name}
+                  {service?.title}
                 </h1>
               </div>
               <button className="text-gray-500 hover:text-indigo-600 cursor-pointer !rounded-button whitespace-nowrap">
@@ -377,8 +172,8 @@ const CateringServiceDetailsPage = () => {
               {/* Main Image */}
               <div className="relative h-[500px]">
                 <img
-                  src={service.images[currentImageIndex]}
-                  alt={`${service.name} - Image ${currentImageIndex + 1}`}
+                  src={service?.images[currentImageIndex]}
+                  alt={`${service?.title} - Image ${currentImageIndex + 1}`}
                   className="w-full h-full object-cover object-top"
                 />
 
@@ -416,7 +211,7 @@ const CateringServiceDetailsPage = () => {
 
               {/* Thumbnail Navigation */}
               <div className="flex p-2 bg-gray-100 overflow-x-auto">
-                {service.images.map((image, index) => (
+                {service?.images?.map((image, index) => (
                   <div
                     key={index}
                     onClick={() => setCurrentImageIndex(index)}
@@ -448,7 +243,7 @@ const CateringServiceDetailsPage = () => {
                 <div className="flex flex-wrap justify-between items-start mb-4">
                   <div>
                     <h1 className="text-3xl font-bold text-gray-900 mb-2">
-                      {service.name}
+                      {service.title}
                     </h1>
                     <div className="flex items-center mb-2">
                       <div className="flex mr-2">
@@ -472,12 +267,14 @@ const CateringServiceDetailsPage = () => {
                     <div className="flex flex-wrap items-center gap-3">
                       <span
                         className={`text-sm font-medium px-3 py-1 rounded-full ${
-                          service.available
+                          service.status === "approved"
                             ? "bg-green-100 text-green-800"
                             : "bg-red-100 text-red-800"
                         }`}
                       >
-                        {service.available ? "Available" : "Unavailable"}
+                        {service.status === "approved"
+                          ? "Available"
+                          : "Unavailable"}
                       </span>
                       <span className="text-sm text-gray-600">
                         <i className="fas fa-users mr-1"></i> {service.capacity}
@@ -489,9 +286,9 @@ const CateringServiceDetailsPage = () => {
                   </div>
                   <div className="text-right mt-2 lg:mt-0">
                     <p className="text-2xl font-bold text-indigo-600">
-                      {service.price}
+                      ₹{service.price}
                     </p>
-                    <p className="text-sm text-gray-500">per person</p>
+                    <p className="text-sm text-gray-500">per event</p>
                   </div>
                 </div>
               </div>
@@ -538,7 +335,7 @@ const CateringServiceDetailsPage = () => {
                         Key Features
                       </h3>
                       <ul className="mb-6">
-                        {service.features.map((feature, index) => (
+                        {service?.features?.map((feature, index) => (
                           <li key={index} className="flex items-start mb-2">
                             <i className="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
                             <span className="text-gray-600">{feature}</span>
@@ -550,7 +347,7 @@ const CateringServiceDetailsPage = () => {
                         What's Included
                       </h3>
                       <ul className="mb-6">
-                        {service.included.map((item, index) => (
+                        {service?.included?.map((item, index) => (
                           <li key={index} className="flex items-start mb-2">
                             <i className="fas fa-utensils text-indigo-500 mt-1 mr-2"></i>
                             <span className="text-gray-600">{item}</span>
@@ -564,9 +361,78 @@ const CateringServiceDetailsPage = () => {
                       <p className="text-gray-600 mb-6">{service.setup}</p>
 
                       <h3 className="text-lg font-semibold text-gray-900 mb-3">
+                        Terms and Conditions
+                      </h3>
+                      <p className="text-gray-600 mb-6">{service.terms}</p>
+
+                      {/* <h3 className="text-lg font-semibold text-gray-900 mb-3">
                         Cancellation Policy
                       </h3>
-                      <p className="text-gray-600">{service.cancellation}</p>
+                      <p className="text-gray-600">{service.cancellation}</p> */}
+
+                      {/* <h3 className="text-lg font-semibold text-gray-900 mb-3 mt-6">
+                        Additional Information
+                      </h3>
+                      <ul className="mb-6">
+                        <li className="flex items-start mb-2">
+                          <i className="fas fa-info-circle text-indigo-500 mt-1 mr-2"></i>
+                          <span className="text-gray-600">
+                            <strong>Category:</strong> {service.category}
+                          </span>
+                        </li>
+                        <li className="flex items-start mb-2">
+                          <i className="fas fa-info-circle text-indigo-500 mt-1 mr-2"></i>
+                          <span className="text-gray-600">
+                            <strong>Created At:</strong> {service.createdAt}
+                          </span>
+                        </li>
+                        <li className="flex items-start mb-2">
+                          <i className="fas fa-info-circle text-indigo-500 mt-1 mr-2"></i>
+                          <span className="text-gray-600">
+                            <strong>Updated At:</strong> {service.updatedAt}
+                          </span>
+                        </li>
+                        <li className="flex items-start mb-2">
+                          <i className="fas fa-info-circle text-indigo-500 mt-1 mr-2"></i>
+                          <span className="text-gray-600">
+                            <strong>Status:</strong> {service.status}
+                          </span>
+                        </li>
+                        <li className="flex items-start mb-2">
+                          <i className="fas fa-info-circle text-indigo-500 mt-1 mr-2"></i>
+                          <span className="text-gray-600">
+                            <strong>Status Updated At:</strong>{" "}
+                            {service.statusUpdatedAt}
+                          </span>
+                        </li>
+                        <li className="flex items-start mb-2">
+                          <i className="fas fa-info-circle text-indigo-500 mt-1 mr-2"></i>
+                          <span className="text-gray-600">
+                            <strong>Vendor ID:</strong> {service.vendorId}
+                          </span>
+                        </li>
+                        <li className="flex items-start mb-2">
+                          <i className="fas fa-info-circle text-indigo-500 mt-1 mr-2"></i>
+                          <span className="text-gray-600">
+                            <strong>Vendor Name:</strong>{" "}
+                            {service.vendorName || "N/A"}
+                          </span>
+                        </li>
+                        <li className="flex items-start mb-2">
+                          <i className="fas fa-info-circle text-indigo-500 mt-1 mr-2"></i>
+                          <span className="text-gray-600">
+                            <strong>Vendor Email:</strong>{" "}
+                            {service.vendorEmail || "N/A"}
+                          </span>
+                        </li>
+                        <li className="flex items-start mb-2">
+                          <i className="fas fa-info-circle text-indigo-500 mt-1 mr-2"></i>
+                          <span className="text-gray-600">
+                            <strong>Is Deleted:</strong>{" "}
+                            {service.isDeleted ? "Yes" : "No"}
+                          </span>
+                        </li>
+                      </ul> */}
                     </div>
                   )}
 
@@ -1056,9 +922,7 @@ const CateringServiceDetailsPage = () => {
                     <div className="relative">
                       <select className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 text-sm appearance-none">
                         <option>Select a package</option>
-                        <option>Silver Package - $25 per person</option>
-                        <option>Gold Package - $30 per person</option>
-                        <option>Platinum Package - $35 per person</option>
+                        <option>Standard Package - ₹650.43 per event</option>
                       </select>
                       <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
                         <i className="fas fa-chevron-down text-gray-400"></i>
@@ -1092,10 +956,6 @@ const CateringServiceDetailsPage = () => {
                         catering@eventpro.com
                       </span>
                     </div>
-                    {/* <button className="w-full bg-white border border-gray-300 text-gray-700 py-2 px-4 rounded-md hover:bg-gray-50 transition font-medium !rounded-button whitespace-nowrap cursor-pointer">
-                      <i className="far fa-comment-dots mr-2"></i>
-                      Live Chat
-                    </button> */}
                   </div>
                 </div>
               </div>
@@ -1191,9 +1051,9 @@ const CateringServiceDetailsPage = () => {
           <div className="flex justify-between items-center">
             <div>
               <p className="text-xl font-bold text-indigo-600">
-                {service.price}
+                ₹{service.price}
               </p>
-              <p className="text-sm text-gray-500">per person</p>
+              <p className="text-sm text-gray-500">per event</p>
             </div>
             <button className="bg-indigo-600 text-white py-2 px-6 rounded-md hover:bg-indigo-700 transition font-medium !rounded-button whitespace-nowrap cursor-pointer">
               Book Now

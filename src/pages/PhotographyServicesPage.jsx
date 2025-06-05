@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { fetchServices } from "../Api/serviceApi";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const PhotographyServicesPage = () => {
   const [viewMode, setViewMode] = useState("grid");
@@ -351,7 +351,7 @@ const PhotographyServicesPage = () => {
                           </p>
                         </div>
                       </div>
-                      <div className="flex space-x-2">
+                      {/* <div className="flex space-x-2">
                         <button
                           onClick={() =>
                             navigate(`/photography-services/${service.id}`)
@@ -369,17 +369,24 @@ const PhotographyServicesPage = () => {
                         >
                           Book Now
                         </button>
-                      </div>
+                      </div> */}
                     </div>
                     <div className="mt-6 flex flex-wrap gap-2">
-                      <a
-                        href={`https://readdy.ai/home/bcdd3814-0fce-4c39-9e2f-e221ce2b69ce/${service.id}`}
-                        data-readdy="true"
+                      <button
+                        onClick={() =>
+                          navigate(`/photography-services/${service.id}`)
+                        }
                         className="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 transition !rounded-button whitespace-nowrap cursor-pointer inline-block no-underline"
                       >
                         View Details
-                      </a>
-                      <button className="bg-white text-indigo-600 border border-indigo-600 px-4 py-2 rounded-md hover:bg-indigo-50 transition !rounded-button whitespace-nowrap cursor-pointer">
+                      </button>
+
+                      <button
+                        onClick={() =>
+                          navigate(`/photography-services/${service.id}`)
+                        }
+                        className="bg-white text-indigo-600 border border-indigo-600 px-4 py-2 rounded-md hover:bg-indigo-50 transition !rounded-button whitespace-nowrap cursor-pointer"
+                      >
                         Book Now
                       </button>
                     </div>

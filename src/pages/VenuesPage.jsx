@@ -119,7 +119,7 @@ const VenuesPage = () => {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
             <div className="flex flex-wrap items-center gap-4">
               {/* Venue Type Filter */}
-              <div className="relative">
+              {/* <div className="relative">
                 <button
                   onClick={toggleVenueTypeDropdown}
                   className="flex items-center bg-gray-100 hover:bg-gray-200 px-4 py-2 rounded-md text-gray-700 !rounded-button whitespace-nowrap cursor-pointer"
@@ -178,40 +178,40 @@ const VenuesPage = () => {
                     </button>
                   </div>
                 )}
-              </div>
+              </div> */}
 
               {/* Capacity Range */}
-              <div className="flex items-center bg-gray-100 px-4 py-2 rounded-md text-gray-700">
+              {/* <div className="flex items-center bg-gray-100 px-4 py-2 rounded-md text-gray-700">
                 <i className="fas fa-users mr-2"></i>
                 <span className="mr-2">Capacity:</span>
                 <span>
                   {capacityRange[0]}-{capacityRange[1]} guests
                 </span>
-              </div>
+              </div> */}
 
               {/* Price Range */}
-              <div className="flex items-center bg-gray-100 px-4 py-2 rounded-md text-gray-700">
+              {/* <div className="flex items-center bg-gray-100 px-4 py-2 rounded-md text-gray-700">
                 <i className="fas fa-dollar-sign mr-2"></i>
                 <span className="mr-2">Price:</span>
                 <span>
                   ${priceRange[0]}-${priceRange[1]}
                 </span>
-              </div>
+              </div> */}
 
               {/* Additional Filters Button */}
-              <button
+              {/* <button
                 onClick={() => setShowFiltersModal(true)}
                 className="bg-gray-100 hover:bg-gray-200 px-4 py-2 rounded-md text-gray-700 !rounded-button whitespace-nowrap cursor-pointer"
               >
                 <i className="fas fa-sliders-h mr-2"></i>
                 More Filters
-              </button>
+              </button> */}
 
               {/* Spacer */}
               <div className="flex-grow"></div>
 
               {/* Sort By */}
-              <div className="relative">
+              {/* <div className="relative">
                 <button
                   onClick={toggleSortDropdown}
                   className="flex items-center bg-gray-100 hover:bg-gray-200 px-4 py-2 rounded-md text-gray-700 !rounded-button whitespace-nowrap cursor-pointer"
@@ -264,7 +264,7 @@ const VenuesPage = () => {
                     </button>
                   </div>
                 )}
-              </div>
+              </div> */}
             </div>
           </div>
         </div>
@@ -351,12 +351,12 @@ const VenuesPage = () => {
                         <i className="fas fa-clipboard-check mr-2"></i>
                         Book Now
                       </button>
-                      <button
+                      {/* <button
                         onClick={() => openCalendar(venue.title)}
                         className="bg-gray-100 hover:bg-gray-200 text-gray-700 p-2 rounded-md transition !rounded-button whitespace-nowrap cursor-pointer"
                       >
                         <i className="fas fa-calendar-alt"></i>
-                      </button>
+                      </button> */}
                     </div>
                   </div>
 

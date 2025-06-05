@@ -263,13 +263,13 @@ const InvitationPage = () => {
                       ))}
                     </div>
                     <div className="mt-6 flex justify-between items-center">
-                      <a
-                        href="https://readdy.ai/home/bcdd3814-0fce-4c39-9e2f-e221ce2b69ce/d1d777c2-17f1-4c0d-ab7e-08b56bc0c66b"
+                      <Link
+                        to={"/invitation/" + service.id}
                         data-readdy="true"
                         className="text-indigo-600 hover:text-indigo-800 font-medium !rounded-button whitespace-nowrap cursor-pointer"
                       >
                         View Details
-                      </a>
+                      </Link>
                       <div className="flex space-x-2">
                         <button className="p-2 text-gray-500 hover:text-indigo-600 hover:bg-indigo-50 rounded-full !rounded-button whitespace-nowrap cursor-pointer">
                           <i className="fas fa-edit"></i>

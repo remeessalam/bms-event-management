@@ -447,13 +447,13 @@ const SoundAndDjServicePage = () => {
                           <button
                             onClick={(e) => {
                               e.stopPropagation();
-                              navigate(`/sound-dj-service/${service.id}`);
+                              navigate(`/sound-and-dj-services/${service.id}`);
                             }}
                             className="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 transition"
                           >
                             View Details
                           </button>
-                          <div className="flex space-x-2">
+                          {/* <div className="flex space-x-2">
                             <button
                               className="p-2 text-gray-500 hover:text-indigo-600 hover:bg-indigo-50 rounded-full"
                               onClick={(e) => {
@@ -461,6 +461,7 @@ const SoundAndDjServicePage = () => {
                                 navigate(`/edit-service/${service.id}`);
                               }}
                             >
+                              asdf
                               <i className="fas fa-edit"></i>
                             </button>
                             <button
@@ -472,7 +473,7 @@ const SoundAndDjServicePage = () => {
                             >
                               <i className="fas fa-trash-alt"></i>
                             </button>
-                          </div>
+                          </div> */}
                         </div>
                       </div>
                     </div>

@@ -1,6 +1,7 @@
 // The exported code uses Tailwind CSS. Install Tailwind CSS in your dev environment to ensure all styles work.
 import React, { useState, useEffect } from "react";
 import { fetchServices } from "../Api/serviceApi";
+import { useNavigate } from "react-router-dom";
 
 const DecorationPage = () => {
   // const [activeFilter, setActiveFilter] = useState("All");
@@ -44,6 +45,12 @@ const DecorationPage = () => {
 
     fetchServiceData();
   }, []);
+
+  const navigate = useNavigate();
+  const handleOpenService = (serviceId) => {
+    navigate(`/decorations/${serviceId}`);
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       <main>
@@ -423,13 +430,15 @@ const DecorationPage = () => {
                       <span className="text-lg font-bold text-gray-900">
                         {service.currency} {service.price.toLocaleString()}
                       </span>
-                      <a
-                        href={`https://readdy.ai/home/bcdd3814-0fce-4c39-9e2f-e221ce2b69ce/${service.id}`}
-                        data-readdy="true"
-                        className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md transition !rounded-button whitespace-nowrap cursor-pointer inline-block no-underline"
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleOpenService(service.id);
+                        }}
+                        className="text-indigo-600 hover:text-indigo-800 text-sm font-medium"
                       >
                         View Details
-                      </a>
+                      </button>
                     </div>
                   </div>
                 </div>
