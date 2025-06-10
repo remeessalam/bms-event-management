@@ -1,7 +1,8 @@
 import axios from "axios";
 
 // const BASE_URL = "http://localhost:5050/api";
-const BASE_URL = "https://event-management-production-c14f.up.railway.app/api";
+const BASE_URL =
+  "https://event-management-production-c14f.up.railway.app/api/auth";
 export const registerUser = async (userData) => {
   try {
     const response = await axios.post(`${BASE_URL}/register`, userData);
