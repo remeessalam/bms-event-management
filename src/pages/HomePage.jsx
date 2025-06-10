@@ -99,10 +99,13 @@ const HomePage = () => {
                   <i className="fas fa-calendar-alt mr-3"></i>
                   Start Planning Now
                 </button>
-                <button className="bg-transparent text-white border-2 border-white px-8 py-4 text-lg rounded-md font-semibold hover:bg-white/10 transition-all transform hover:scale-105 !rounded-button whitespace-nowrap cursor-pointer">
+                <Link
+                  to={"/vendor"}
+                  className="bg-transparent text-white border-2 border-white px-8 py-4 text-lg rounded-md font-semibold hover:bg-white/10 transition-all transform hover:scale-105 !rounded-button whitespace-nowrap cursor-pointer"
+                >
                   <i className="fas fa-store mr-3"></i>
                   Join as Vendor
-                </button>
+                </Link>
               </div>
               <div className="mt-16 flex items-center space-x-8">
                 <div className="flex -space-x-4">
