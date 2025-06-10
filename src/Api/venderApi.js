@@ -1,7 +1,7 @@
 import axios from "axios";
 
-const BASE_URL = "http://localhost:5050/api";
-
+// const BASE_URL = "http://localhost:5050/api";
+const BASE_URL = "https://event-management-production-c14f.up.railway.app/api";
 export const getVendorServices = async (page = 1, limit = 10) => {
   try {
     const token = localStorage.getItem("vendorjwtToken");

@@ -27,7 +27,7 @@ const ServiceBookModal = ({ closeBookingForm, service }) => {
       };
 
       const response = await fetch(
-        `http://localhost:5050/api/services/${service.id}/book`,
+        `https://event-management-production-c14f.up.railway.app/api/services/${service.id}/book`,
         {
           method: "POST",
           headers: {
