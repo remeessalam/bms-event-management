@@ -228,7 +228,7 @@ const PhotographyServiceDetailsPage = () => {
                   <i className="fas fa-images mr-2"></i>
                   Portfolio
                 </button>
-                <button
+                {/* <button
                   onClick={() => setActiveTab("pricing")}
                   className={`py-4 px-6 font-medium text-sm border-b-2 ${
                     activeTab === "pricing"
@@ -238,8 +238,8 @@ const PhotographyServiceDetailsPage = () => {
                 >
                   <i className="fas fa-tag mr-2"></i>
                   Pricing
-                </button>
-                <button
+                </button> */}
+                {/* <button
                   onClick={() => setActiveTab("reviews")}
                   className={`py-4 px-6 font-medium text-sm border-b-2 ${
                     activeTab === "reviews"
@@ -249,8 +249,8 @@ const PhotographyServiceDetailsPage = () => {
                 >
                   <i className="fas fa-star mr-2"></i>
                   Reviews
-                </button>
-                <button
+                </button> */}
+                {/* <button
                   onClick={() => setActiveTab("availability")}
                   className={`py-4 px-6 font-medium text-sm border-b-2 ${
                     activeTab === "availability"
@@ -260,7 +260,7 @@ const PhotographyServiceDetailsPage = () => {
                 >
                   <i className="fas fa-calendar-check mr-2"></i>
                   Availability
-                </button>
+                </button> */}
               </nav>
             </div>
 
@@ -467,33 +467,6 @@ const PhotographyServiceDetailsPage = () => {
         </div>
 
         {/* Photographer Profile (unchanged, as vendorName is null) */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="bg-white shadow-md rounded-lg overflow-hidden">
-            <div className="md:flex">
-              <div className="md:w-1/3 bg-gradient-to-br from-indigo-700 to-purple-700 p-6 text-white">
-                <div className="flex flex-col items-center text-center">
-                  <div className="h-32 w-32 rounded-full overflow-hidden border-4 border-white mb-4">
-                    <img
-                      src="https://readdy.ai/api/search-image?query=professional%2520headshot%2520of%2520a%2520male%2520photographer%2520with%2520a%2520confident%2520smile%252C%2520neutral%2520studio%2520background%252C%2520professional%2520attire%252C%2520well-groomed%2520appearance%252C%2520high%2520quality%2520portrait&width=200&height=200&seq=9&orientation=squarish"
-                      alt="Photographer"
-                      className="h-full w-full object-cover"
-                    />
-                  </div>
-                  <h3 className="text-2xl font-bold mb-1">
-                    {services?.vendorName || "John Anderson"}
-                  </h3>
-                  <p className="text-indigo-200 mb-4">
-                    Professional Photographer
-                  </p>
-                  {/* Rest of the profile section unchanged */}
-                </div>
-              </div>
-              <div className="md:w-2/3 p-6">
-                {/* Existing profile content */}
-              </div>
-            </div>
-          </div>
-        </div>
 
         {/* Booking and Related Services Sections (unchanged) */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">

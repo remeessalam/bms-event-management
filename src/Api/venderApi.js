@@ -51,7 +51,7 @@ export const addVendorService = async (serviceData) => {
 
     console.log("Service addedasdfsd:", response.data.success);
     if (!response.data.success) throw new Error("Failed to add service");
-    return response.data.data;
+    return response.data;
   } catch (error) {
     console.error("Error adding service:", error);
     throw error;

@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { FaStar, FaHeart, FaAward } from "react-icons/fa";
 import { FaHandshake, FaTools, FaGlobe } from "react-icons/fa";
 import { FaUser } from "react-icons/fa";
+import { scroller } from "react-scroll";
 
 const HomePage = () => {
   const { language } = useLanguage();
@@ -72,6 +73,15 @@ const HomePage = () => {
         "Custom invitation design, printing, and digital invitation services",
     },
   ];
+
+  const scrollToServices = () => {
+    scroller.scrollTo("services", {
+      duration: 800,
+      delay: 0,
+      smooth: "easeInOutQuart",
+      offset: -150, // adjust if you have a fixed navbar
+    });
+  };
   return (
     <div className="min-h-screen bg-gray-50">
       <main>
@@ -95,7 +105,10 @@ const HomePage = () => {
                 network.
               </p>
               <div className="flex flex-col sm:flex-row space-y-6 sm:space-y-0 sm:space-x-6">
-                <button className="bg-white text-indigo-900 px-8 py-4 text-lg rounded-md font-semibold hover:bg-indigo-50 transition-all transform hover:scale-105 !rounded-button whitespace-nowrap cursor-pointer shadow-lg">
+                <button
+                  onClick={scrollToServices}
+                  className="bg-white text-indigo-900 px-8 py-4 text-lg rounded-md font-semibold hover:bg-indigo-50 transition-all transform hover:scale-105 !rounded-button whitespace-nowrap cursor-pointer shadow-lg"
+                >
                   <i className="fas fa-calendar-alt mr-3"></i>
                   Start Planning Now
                 </button>
@@ -281,7 +294,10 @@ animation: fadeIn 1s ease-out;
                 {translate("services")}
               </h2>
             </div>
-            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            <div
+              id="services"
+              className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+            >
               {services.map((service) => (
                 <div
                   key={service.id}

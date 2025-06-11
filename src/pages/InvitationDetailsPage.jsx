@@ -832,68 +832,6 @@ const InvitationDetailsPage = () => {
           )}
         </div>
 
-        <div className="bg-gray-50 border-t border-gray-200 py-12">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">
-              You Might Also Like
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="bg-white shadow-md rounded-lg overflow-hidden hover:shadow-lg transition">
-                <div
-                  className="h-48 bg-cover bg-center"
-                  style={{
-                    backgroundImage: `url('https://readdy.ai/api/search-image?query=elegant%2520digital%2520invitation%2520design%2520with%2520modern%2520typography%2520and%2520floral%2520elements%2520on%2520a%2520tablet%2520screen%252C%2520professional%2520e-invitation%2520with%2520RSVP%2520functionality%252C%2520displayed%2520on%2520a%2520clean%2520white%2520desk%2520with%2520minimal%2520decoration%2520and%2520soft%2520natural%2520lighting&width=400&height=250&seq=101&orientation=landscape')`,
-                  }}
-                >
-                  <div className="h-full w-full bg-gradient-to-t from-black/60 to-transparent flex items-end">
-                    <div className="p-4 text-white">
-                      <span className="bg-blue-500 text-xs font-bold px-2 py-1 rounded-full uppercase tracking-wide">
-                        Digital
-                      </span>
-                    </div>
-                  </div>
-                </div>
-                <div className="p-4">
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <h3 className="text-lg font-bold text-gray-900">
-                        Digital Invitation Suite
-                      </h3>
-                      <div className="flex items-center mt-1">
-                        <div className="flex text-yellow-400">
-                          <i className="fas fa-star"></i>
-                          <i className="fas fa-star"></i>
-                          <i className="fas fa-star"></i>
-                          <i className="fas fa-star"></i>
-                          <i className="fas fa-star-half-alt"></i>
-                        </div>
-                        <span className="ml-2 text-xs text-gray-600">4.5</span>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-md font-bold text-indigo-600">
-                        $75 - $150
-                      </p>
-                    </div>
-                  </div>
-                  <div className="mt-4 flex justify-between items-center">
-                    <a
-                      href="https://readdy.ai/home/bcdd3814-0fce-4c39-9e2f-e221ce2b69ce/6d446a38-13eb-44da-9ba8-82db1d87a763"
-                      data-readdy="true"
-                      className="text-indigo-600 hover:text-indigo-800 font-medium cursor-pointer"
-                    >
-                      View Details
-                    </a>
-                    <button className="bg-indigo-600 text-white px-3 py-1 rounded-md text-sm hover:bg-indigo-700 transition !rounded-button whitespace-nowrap cursor-pointer">
-                      Book Now
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
         {/* <div className="bg-indigo-700 text-white">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
             <div className="md:flex md:items-center md:justify-between">

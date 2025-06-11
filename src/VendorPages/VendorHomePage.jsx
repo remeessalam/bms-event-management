@@ -23,6 +23,9 @@ import {
   FaCcPaypal,
   FaCcApplePay,
 } from "react-icons/fa";
+import { logoutUser } from "../Api/authApi";
+import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 
 const VendorHomePage = () => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -86,11 +89,11 @@ const VendorHomePage = () => {
     "Feature 4",
     "Feature 5",
   ];
-
+  const navigate = useNavigate();
   useEffect(() => {
     const token = localStorage.getItem("vendorjwtToken");
     if (!token) {
-      window.location.href = "/login";
+      navigate("/login");
     }
   }, []);
 
@@ -242,7 +245,22 @@ const VendorHomePage = () => {
       images: updatedImages,
     });
   };
-
+  const logOut = async () => {
+    try {
+      const res = await logoutUser("vendorjwtToken");
+      console.log(res, "asdfasdfasdfasfsdfasdf");
+      if (!res.success) {
+        toast.error(res.message);
+        return;
+      }
+      toast.success(res.message);
+      localStorage.removeItem("vendorjwtToken");
+      navigate("/login");
+    } catch (error) {
+      console.error("Logout Error:", error);
+      toast.error("Failed to logout. Please try again.");
+    }
+  };
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
@@ -268,6 +286,12 @@ const VendorHomePage = () => {
                     <span className="ml-2 text-gray-700">John Doe</span>
                   </div>
                 </div>
+                <button
+                  onClick={logOut}
+                  className="bg-indigo-600 text-white ml-4 px-4 py-2 rounded-md hover:bg-indigo-700 transition"
+                >
+                  Logout
+                </button>
               </div>
             </div>
           </div>

@@ -490,17 +490,7 @@ const SoundAndDjServiceDetailsPage = () => {
                   <i className="fas fa-list-ul mr-2"></i>
                   Features
                 </button>
-                <button
-                  onClick={() => handleTabChange("pricing")}
-                  className={`py-4 px-6 font-medium text-sm border-b-2 whitespace-nowrap ${
-                    activeTab === "pricing"
-                      ? "border-indigo-600 text-indigo-600"
-                      : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
-                  } !rounded-button cursor-pointer`}
-                >
-                  <i className="fas fa-tag mr-2"></i>
-                  Pricing
-                </button>
+
                 {/* <button
                   onClick={() => handleTabChange("reviews")}
                   className={`py-4 px-6 font-medium text-sm border-b-2 whitespace-nowrap ${
@@ -576,67 +566,6 @@ const SoundAndDjServiceDetailsPage = () => {
               )}
 
               {/* Pricing Tab */}
-              {activeTab === "pricing" && (
-                <div>
-                  <h2 className="text-xl font-semibold text-gray-900 mb-4">
-                    Pricing Information
-                  </h2>
-                  <div className="bg-white border rounded-lg overflow-hidden">
-                    <div className="p-6">
-                      <div className="flex justify-between items-center">
-                        <div>
-                          <h3 className="text-xl font-bold text-gray-900">
-                            Base Package
-                          </h3>
-                          <p className="text-gray-600">
-                            Includes all essential services
-                          </p>
-                        </div>
-                        <div className="text-right">
-                          <div className="text-2xl font-bold text-indigo-600">
-                            {formatter.format(service.price)}
-                          </div>
-                          <div className="text-sm text-gray-500">
-                            {formatPricingModel(service.pricingModel)}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="mt-8 bg-gray-50 rounded-lg p-6">
-                    <h3 className="text-lg font-medium text-gray-900 mb-4">
-                      Additional Services
-                    </h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div className="flex justify-between items-center p-3 border border-gray-200 rounded-md">
-                        <div>
-                          <h4 className="font-medium">Extra Hour</h4>
-                          <p className="text-sm text-gray-600">
-                            Extend your event beyond the package hours
-                          </p>
-                        </div>
-                        <span className="font-medium text-indigo-600">
-                          $75/hour
-                        </span>
-                      </div>
-                      <div className="flex justify-between items-center p-3 border border-gray-200 rounded-md">
-                        <div>
-                          <h4 className="font-medium">
-                            Enhanced Lighting Package
-                          </h4>
-                          <p className="text-sm text-gray-600">
-                            Additional lighting effects and uplighting
-                          </p>
-                        </div>
-                        <span className="font-medium text-indigo-600">
-                          $150
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
 
               {/* Reviews Tab */}
               {activeTab === "reviews" && (
@@ -861,66 +790,6 @@ const SoundAndDjServiceDetailsPage = () => {
           </div>
 
           {/* Related Services */}
-          {relatedServices.length > 0 && (
-            <div className="mt-8">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-xl font-semibold text-gray-900">
-                  Related Services
-                </h2>
-                <button
-                  onClick={() => navigate("/sound-and-dj-services")}
-                  className="text-indigo-600 hover:text-indigo-800 cursor-pointer"
-                >
-                  View All
-                </button>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {relatedServices.map((service) => (
-                  <div
-                    key={service.id}
-                    className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition cursor-pointer"
-                    onClick={() => navigate(`/sound-dj-service/${service.id}`)}
-                  >
-                    <div className="h-48 overflow-hidden">
-                      <img
-                        src={service.image}
-                        alt={service.title}
-                        className="w-full h-full object-cover object-top transition-transform hover:scale-105"
-                      />
-                    </div>
-                    <div className="p-4">
-                      <h3 className="text-lg font-semibold text-gray-900">
-                        {service.title}
-                      </h3>
-                      <div className="flex items-center mt-1">
-                        <div className="flex items-center">
-                          {Array.from({ length: 5 }).map((_, index) => (
-                            <i
-                              key={index}
-                              className={`${
-                                index < service.rating ? "fas" : "far"
-                              } fa-star text-yellow-400 text-sm`}
-                            ></i>
-                          ))}
-                        </div>
-                        <span className="text-sm text-gray-500 ml-1">
-                          ({service.reviews} reviews)
-                        </span>
-                      </div>
-                      <div className="mt-3 flex items-center text-indigo-700 font-semibold">
-                        <span className="text-lg">
-                          {formatter.format(service.price)}
-                        </span>
-                        <span className="text-sm text-gray-500 ml-1">
-                          / {service.unit}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
 
           {/* Inquiry Form */}
           {/* <div className="mt-8 bg-white rounded-lg shadow-md p-6">

@@ -1,6 +1,7 @@
 import { useForm } from "react-hook-form";
 import { useState } from "react";
 import { addVendorService } from "../../Api/venderApi";
+import toast from "react-hot-toast";
 
 const Modal = ({
   services,
@@ -80,13 +81,14 @@ const Modal = ({
       }
 
       const response = await addVendorService(formDataToSend);
-
-      if (!response.su) {
+      console.log(response, "response from addVendorService");
+      if (!response.success) {
         throw new Error("Failed to submit service");
       }
 
-      const result = await response.json();
+      // const result = await response.json();
       setSubmitSuccess("Service submitted successfully!");
+      toast.success(response.message || "Service submitted successfully!");
       reset();
       setShowModal(false);
     } catch (err) {

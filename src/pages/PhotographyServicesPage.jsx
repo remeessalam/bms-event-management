@@ -284,7 +284,7 @@ const PhotographyServicesPage = () => {
                         })`,
                       }}
                     ></div>
-                    <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/70 to-transparent">
+                    {/* <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/70 to-transparent">
                       <div className="flex space-x-2">
                         <div className="h-10 w-10 rounded-full overflow-hidden border-2 border-white">
                           <img
@@ -311,7 +311,7 @@ const PhotographyServicesPage = () => {
                           +{Math.floor(Math.random() * 10) + 5}
                         </div>
                       </div>
-                    </div>
+                    </div> */}
                   </div>
                   <div
                     className={`p-6 ${viewMode === "list" ? "md:w-2/3" : ""}`}

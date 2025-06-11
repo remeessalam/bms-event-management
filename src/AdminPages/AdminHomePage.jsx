@@ -12,8 +12,12 @@ import {
   FaChevronRight,
   FaAngleDoubleRight,
 } from "react-icons/fa";
+import { logoutUser } from "../Api/authApi";
+import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 const AdminHomePage = () => {
   // State for services
+  const navigate = useNavigate();
 
   const [showStatusPopup, setShowStatusPopup] = useState(null);
   const [availableStatuses, setAvailableStatuses] = useState([]);
@@ -292,7 +296,22 @@ const AdminHomePage = () => {
     pagination.currentPage * pagination.itemsPerPage,
     pagination.totalItems
   );
-
+  const logOut = async () => {
+    try {
+      const res = await logoutUser("adminjwtToken");
+      console.log(res, "asdfasdfasdfasfsdfasdf");
+      if (!res.success) {
+        toast.error(res.message);
+        return;
+      }
+      toast.success(res.message);
+      localStorage.removeItem("adminjwtToken");
+      navigate("/login");
+    } catch (error) {
+      console.error("Logout Error:", error);
+      toast.error("Failed to logout. Please try again.");
+    }
+  };
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
@@ -320,6 +339,12 @@ const AdminHomePage = () => {
                   </div>
                 </div>
               </div>
+              <button
+                onClick={logOut}
+                className="bg-indigo-600 text-white ml-4 px-4 py-2 rounded-md hover:bg-indigo-700 transition"
+              >
+                Logout
+              </button>
             </div>
           </div>
         </div>
@@ -529,7 +554,7 @@ const AdminHomePage = () => {
         </div>
 
         {/* Services table */}
-        <div className="bg-white shadow overflow-hidden sm:rounded-lg">
+        <div className="bg-white shadow  sm:rounded-lg">
           <table className="min-w-full divide-y divide-gray-200">
             {/* ... table header ... */}
             <tbody className="bg-white divide-y divide-gray-200">

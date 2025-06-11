@@ -236,7 +236,7 @@ const DecorationDetailsPage = () => {
                   </div>
                 </div>
 
-                <div className="lg:col-span-1">
+                <div className="lg:col-span-1 border border-slate-300   rounded-xl overflow-hidden">
                   <div className="bg-gray-50 rounded-lg p-6 shadow-sm">
                     <h3 className="text-lg font-semibold text-gray-900 mb-4">
                       Service Details
