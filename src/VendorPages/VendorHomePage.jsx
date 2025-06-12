@@ -25,7 +25,8 @@ import {
 } from "react-icons/fa";
 import { logoutUser } from "../Api/authApi";
 import toast from "react-hot-toast";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { logo } from "../data/constant";
 
 const VendorHomePage = () => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -266,10 +267,12 @@ const VendorHomePage = () => {
       {/* Header */}
       <header className="bg-white shadow">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-16">
+          <div className="flex justify-between ">
             <div className="flex">
               <div className="flex-shrink-0 flex items-center">
-                <h1 className="text-2xl font-bold text-indigo-600">EventPro</h1>
+                <Link to={"/"} className="text-2xl font-bold text-indigo-600">
+                  <img src={logo} alt="" className="w-[6rem]" />
+                </Link>{" "}
               </div>
             </div>
             <div className="flex items-center">
@@ -691,7 +694,7 @@ const VendorHomePage = () => {
           <div className="border-t border-gray-200 pt-6">
             <div className="flex justify-between items-center">
               <div>
-                <h3 className="text-lg font-bold text-indigo-600">EventPro</h3>
+                {/* <h3 className="text-lg font-bold text-indigo-600">EventPro</h3> */}
                 <p className="text-sm text-gray-500 mt-1">
                   The ultimate event service marketplace
                 </p>
@@ -891,7 +894,7 @@ const VendorHomePage = () => {
                 </div>
               </div>
               <p className="mt-8 text-base text-gray-400 md:mt-0 md:order-1">
-                © 2025 EventPro, Inc. All rights reserved.
+                © 2025 V-ZOLVE, Inc. All rights reserved.
               </p>
             </div>
           </div>

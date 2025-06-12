@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useLanguage } from "../context/LanguageContext";
 import { useTranslation } from "../translations";
 import { Link } from "react-router-dom";
+import { logo } from "../data/constant";
 
 const Header = () => {
   const { language, changeLanguage } = useLanguage();
@@ -20,11 +21,11 @@ const Header = () => {
   return (
     <header className="bg-white shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
+        <div className="flex justify-between items-center ">
           {/* Logo */}
           <div className="flex-shrink-0 flex items-center">
             <Link to={"/"} className="text-2xl font-bold text-indigo-600">
-              EventPro
+              <img src={logo} alt="" className="w-[6rem]" />
             </Link>
           </div>
           {/* Right side navigation */}

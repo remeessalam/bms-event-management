@@ -23,7 +23,7 @@ export const englishTranslations = {
   termsOfService: "Terms of Service",
 
   // Homepage
-  welcomeMessage: "Welcome to EventPro",
+  welcomeMessage: "Welcome to V-ZOLVE",
   heroSubtitle: "Your one-stop solution for all event management needs",
   exploreServices: "Explore Services",
 

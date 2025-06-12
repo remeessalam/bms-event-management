@@ -1,6 +1,8 @@
 import React from "react";
 import { useLanguage } from "../context/LanguageContext";
 import { useTranslation } from "../translations";
+import { logo } from "../data/constant";
+import { Link } from "react-router-dom";
 
 const Footer = () => {
   const { language } = useLanguage();
@@ -36,9 +38,15 @@ const Footer = () => {
               <i className="fab fa-linkedin text-xl"></i>
             </a>
           </div>
-          <div className="mt-8 md:mt-0 md:order-1">
-            <p className="text-center text-base text-gray-500">
-              &copy; 2025 EventPro. {translate("allRightsReserved")}
+          <div className="mt-8 md:mt-0 md:order-1 mx-auto">
+            <p className="text-center inline-flex items-center text-base text-gray-500">
+              &copy; 2025{" "}
+              <span>
+                <Link to={"/"} className="text-2xl font-bold text-indigo-600">
+                  <img src={logo} alt="" className="w-[6rem]" />
+                </Link>
+              </span>
+              . {translate("allRightsReserved")}
             </p>
           </div>
         </div>

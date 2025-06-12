@@ -101,7 +101,7 @@ const HomePage = () => {
               </h1>
               <p className="text-2xl text-gray-200 mb-12 max-w-2xl leading-relaxed">
                 Transform your vision into unforgettable experiences with
-                EventPro's premium planning platform and exclusive vendor
+                V-ZOLVE's premium planning platform and exclusive vendor
                 network.
               </p>
               <div className="flex flex-col sm:flex-row space-y-6 sm:space-y-0 sm:space-x-6">
@@ -165,7 +165,7 @@ animation: fadeIn 1s ease-out;
         {/* About Us Section */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900">About EventPro</h2>
+            <h2 className="text-3xl font-bold text-gray-900">About V-ZOLVE</h2>
             <div className="w-24 h-1 bg-indigo-600 mx-auto mt-4 mb-6"></div>
             <p className="max-w-3xl mx-auto text-lg text-gray-600">
               We connect event planners with the perfect vendors to create
@@ -366,7 +366,7 @@ animation: fadeIn 1s ease-out;
                   <FaStar />
                 </div>
                 <p className="italic mb-6">
-                  "EventPro made planning my daughter's wedding so much easier.
+                  "V-ZOLVE made planning my daughter's wedding so much easier.
                   We found amazing vendors all in one place and saved so much
                   time!"
                 </p>
@@ -390,7 +390,7 @@ animation: fadeIn 1s ease-out;
                   <FaStar />
                 </div>
                 <p className="italic mb-6">
-                  "As a catering business, joining EventPro has increased our
+                  "As a catering business, joining V-ZOLVE has increased our
                   bookings by 40%. The platform is intuitive and client
                   communication is seamless."
                 </p>
@@ -417,7 +417,7 @@ animation: fadeIn 1s ease-out;
                 </div>
                 <p className="italic mb-6">
                   "Our corporate event was a huge success thanks to the vendors
-                  we found through EventPro. The quality of service exceeded our
+                  we found through V-ZOLVE. The quality of service exceeded our
                   expectations."
                 </p>
                 <div className="flex items-center">
@@ -446,7 +446,7 @@ animation: fadeIn 1s ease-out;
                   </h2>
                   <p className="text-indigo-100 mb-8">
                     Join thousands of event planners who have successfully used
-                    EventPro to create memorable experiences.
+                    V-ZOLVE to create memorable experiences.
                   </p>
                   <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
                     <Link
