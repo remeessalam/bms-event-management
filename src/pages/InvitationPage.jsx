@@ -111,12 +111,12 @@ const InvitationPage = () => {
                   </div>
                 </div>
               </div>
-              <div className="mt-4 flex md:mt-0 md:ml-4 space-x-3">
+              {/* <div className="mt-4 flex md:mt-0 md:ml-4 space-x-3">
                 <button className="bg-white text-indigo-700 px-4 py-2 rounded-md font-medium hover:bg-indigo-50 transition !rounded-button whitespace-nowrap cursor-pointer">
                   <i className="fas fa-plus mr-2"></i>
                   Add New Service
                 </button>
-              </div>
+              </div> */}
             </div>
             <div className="mt-6 flex items-center">
               <span className="bg-white/20 px-3 py-1 rounded-full text-sm">

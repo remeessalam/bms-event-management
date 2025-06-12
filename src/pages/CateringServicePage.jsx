@@ -60,13 +60,13 @@ const CateringServicePage = () => {
   const formatPrice = (price, pricingModel) => {
     switch (pricingModel) {
       case "PER_EVENT":
-        return `$${price} per event`;
+        return `₹${price} per event`;
       case "PER_HOUR":
-        return `$${price} per hour`;
+        return `₹${price} per hour`;
       case "PER_PERSON":
-        return `$${price} per person`;
+        return `₹${price} per person`;
       default:
-        return `$${price}`;
+        return `₹${price}`;
     }
   };
 

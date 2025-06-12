@@ -449,12 +449,12 @@ animation: fadeIn 1s ease-out;
                     EventPro to create memorable experiences.
                   </p>
                   <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
-                    <button className="bg-white text-indigo-700 px-6 py-3 rounded-md font-medium hover:bg-indigo-50 transition !rounded-button whitespace-nowrap cursor-pointer">
+                    <Link
+                      to="/login"
+                      className="bg-white text-indigo-700 px-6 py-3 rounded-md font-medium hover:bg-indigo-50 transition !rounded-button whitespace-nowrap cursor-pointer"
+                    >
                       Get Started
-                    </button>
-                    <button className="bg-transparent text-white border border-white px-6 py-3 rounded-md font-medium hover:bg-white/10 transition !rounded-button whitespace-nowrap cursor-pointer">
-                      Learn More
-                    </button>
+                    </Link>
                   </div>
                 </div>
               </div>

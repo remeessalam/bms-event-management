@@ -67,13 +67,13 @@ const SoundAndDjServicePage = () => {
   const formatPrice = (price, pricingModel) => {
     switch (pricingModel) {
       case "PER_EVENT":
-        return `$${price} per event`;
+        return `₹${price} per event`;
       case "PER_HOUR":
-        return `$${price} per hour`;
+        return `₹${price} per hour`;
       case "PER_DAY":
-        return `$${price} per day`;
+        return `₹${price} per day`;
       default:
-        return `$${price}`;
+        return `₹${price}`;
     }
   };
 
@@ -233,13 +233,13 @@ const SoundAndDjServicePage = () => {
                     </div>
                   )}
                 </div>
-                <button
+                {/* <button
                   className="bg-green-600 text-white px-4 py-2 rounded-md font-medium hover:bg-green-700 transition flex items-center"
                   onClick={() => navigate("/add-service")}
                 >
                   <i className="fas fa-plus mr-2"></i>
                   Add New Service
-                </button>
+                </button> */}
               </div>
             </div>
           </div>
@@ -267,10 +267,10 @@ const SoundAndDjServicePage = () => {
                   </h4>
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-sm text-gray-600">
-                      ${priceRange[0]}
+                      ₹{priceRange[0]}
                     </span>
                     <span className="text-sm text-gray-600">
-                      ${priceRange[1]}
+                      ₹{priceRange[1]}
                     </span>
                   </div>
                   <input
@@ -413,7 +413,7 @@ const SoundAndDjServicePage = () => {
                           {service.description}
                         </p>
                         <div className="mt-3 flex items-center text-indigo-700 font-semibold">
-                          <span className="text-lg">${service.price}</span>
+                          <span className="text-lg">₹{service.price}</span>
                           <span className="text-sm text-gray-500 ml-1">
                             {service.pricingModel === "PER_EVENT"
                               ? "/ event"
